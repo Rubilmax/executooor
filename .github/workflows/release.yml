@@ -9,6 +9,8 @@ on:
     secrets:
       NPM_TOKEN:
         required: true
+      MAINNET_RPC_URL:
+        required: true
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -33,6 +35,8 @@ jobs:
 
       - name: Build package
         run: yarn build
+        env:
+          MAINNET_RPC_URL: ${{ secrets.MAINNET_RPC_URL }}
 
       - name: Publish package
         env:
