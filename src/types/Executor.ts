@@ -23,12 +23,7 @@ import type {
 
 export interface ExecutorInterface extends Interface {
   getFunction(
-    nameOrSignature:
-      | "call_g0oyU7o"
-      | "exec_606BaXt"
-      | "owner"
-      | "transfer"
-      | "transferOwnership"
+    nameOrSignature: "call_g0oyU7o" | "exec_606BaXt" | "transfer"
   ): FunctionFragment;
 
   encodeFunctionData(
@@ -39,14 +34,9 @@ export interface ExecutorInterface extends Interface {
     functionFragment: "exec_606BaXt",
     values: [BytesLike[]]
   ): string;
-  encodeFunctionData(functionFragment: "owner", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "transfer",
     values: [AddressLike, BigNumberish]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "transferOwnership",
-    values: [AddressLike]
   ): string;
 
   decodeFunctionResult(
@@ -57,12 +47,7 @@ export interface ExecutorInterface extends Interface {
     functionFragment: "exec_606BaXt",
     data: BytesLike
   ): Result;
-  decodeFunctionResult(functionFragment: "owner", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "transfer", data: BytesLike): Result;
-  decodeFunctionResult(
-    functionFragment: "transferOwnership",
-    data: BytesLike
-  ): Result;
 }
 
 export interface Executor extends BaseContract {
@@ -121,16 +106,8 @@ export interface Executor extends BaseContract {
 
   exec_606BaXt: TypedContractMethod<[data: BytesLike[]], [void], "payable">;
 
-  owner: TypedContractMethod<[], [string], "view">;
-
   transfer: TypedContractMethod<
     [recipient: AddressLike, amount: BigNumberish],
-    [void],
-    "payable"
-  >;
-
-  transferOwnership: TypedContractMethod<
-    [newOwner: AddressLike],
     [void],
     "payable"
   >;
@@ -155,18 +132,12 @@ export interface Executor extends BaseContract {
     nameOrSignature: "exec_606BaXt"
   ): TypedContractMethod<[data: BytesLike[]], [void], "payable">;
   getFunction(
-    nameOrSignature: "owner"
-  ): TypedContractMethod<[], [string], "view">;
-  getFunction(
     nameOrSignature: "transfer"
   ): TypedContractMethod<
     [recipient: AddressLike, amount: BigNumberish],
     [void],
     "payable"
   >;
-  getFunction(
-    nameOrSignature: "transferOwnership"
-  ): TypedContractMethod<[newOwner: AddressLike], [void], "payable">;
 
   filters: {};
 }

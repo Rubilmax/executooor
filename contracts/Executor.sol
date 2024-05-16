@@ -6,24 +6,17 @@ import {IExecutor} from "./interfaces/IExecutor.sol";
 uint256 constant FALLBACK_CONTEXT_TLOC = 0;
 
 contract Executor is IExecutor {
-    address public owner;
+    address internal immutable OWNER;
 
     constructor(address _owner) {
-        owner = _owner;
+        OWNER = _owner;
     }
 
     /* EXTERNAL */
 
-    /// @notice Transfers ownership of the contract.
-    function transferOwnership(address newOwner) external payable {
-        require(msg.sender == owner);
-
-        owner = newOwner;
-    }
-
     /// @notice Executes a batch of calls.
     function exec_606BaXt(bytes[] memory data) external payable {
-        require(msg.sender == owner);
+        require(msg.sender == OWNER);
 
         _multicall(data);
     }

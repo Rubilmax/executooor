@@ -236,17 +236,7 @@ describe("ExecutorEncoder", () => {
     ).to.be.revertedWithoutReason();
   });
 
-  it("should not transferOwnership with exec", async () => {
-    await expect(encoder.transferOwnership(hacker.address).exec()).to.be.revertedWithoutReason();
-  });
-
   it("should not transfer without exec", async () => {
     await expect(encoder.executor.transfer(hacker.address, 1)).to.be.revertedWithoutReason();
-  });
-
-  it("should transferOwnership without exec", async () => {
-    await encoder.executor.transferOwnership(hacker.address);
-
-    expect(await encoder.executor.owner()).to.equal(hacker.address);
   });
 });

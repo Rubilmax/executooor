@@ -38,7 +38,6 @@ yarn add multidelegatecall
 ### Deployment
 
 Deploy your very own `Executor` contract with the owner address you want, once and for all.
-The owner can always be changed by calling `transferOwnership`.
 
 ### Using ethers-v6
 

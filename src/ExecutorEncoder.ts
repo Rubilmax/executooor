@@ -136,14 +136,6 @@ export class ExecutorEncoder {
     );
   }
 
-  transferOwnership(newOwner: string) {
-    return this.pushCall(
-      this.address,
-      0,
-      ExecutorEncoder.EXECUTOR_IFC.encodeFunctionData("transferOwnership", [newOwner]),
-    );
-  }
-
   tip(amount: BigNumberish) {
     return this.pushCall(
       this.address,
