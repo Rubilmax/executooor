@@ -11,7 +11,7 @@
 
 Ethereum's environment evolves fast. So fast that you can't keep up writing and deploying a new contract everytime you want to do something atomically onchain (not mentioning you also have to approve this freshly deployed contract to spend your favorite ERC20/ERC721!).
 
-Welcome `executooor`'s `Executor` contract:
+Welcome the `Executor` contract:
 
 1. Calculate whatever you need to submit your execution
 2. Chain calls / delegatecalls as needed to execute whatever you want to execute atomically onchain (using `ethers-v6`)
