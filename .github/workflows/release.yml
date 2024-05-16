@@ -2,10 +2,6 @@ name: Release
 
 on:
   workflow_call:
-    inputs:
-      node-version:
-        type: string
-        default: lts/*
     secrets:
       NPM_TOKEN:
         required: true
@@ -22,12 +18,12 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
-      - name: Setup Node.js ${{ inputs.node-version }}
-        uses: actions/setup-node@v3
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
         with:
-          node-version: ${{ inputs.node-version }}
+          node-version: 20
           cache: yarn
 
       - name: Install dependencies
@@ -40,6 +36,5 @@ jobs:
 
       - name: Publish package
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: npx semantic-release
