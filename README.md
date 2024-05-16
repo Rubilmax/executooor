@@ -7,7 +7,7 @@
 [![Commitizen Friendly][commitizen-img]][commitizen-url]
 [![Semantic Release][semantic-release-img]][semantic-release-url]
 
-> 🛣️ Batch calls and/or delegatecalls to any onchain smart contract, handling any callback, without writing and deploying any contract!
+> 🛣️ Batch multiple calls to any onchain smart contract in a single transaction, handling any callback, without writing and deploying any contract!
 
 Ethereum's environment evolves fast. So fast that you can't keep up writing and deploying a new contract everytime you want to do something atomically onchain (not mentioning you also have to approve this freshly deployed contract to spend your favorite ERC20/ERC721!).
 
