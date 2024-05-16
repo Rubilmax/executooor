@@ -39,6 +39,6 @@ jobs:
           key: ${{ github.base_ref || github.ref_name }}-hardhat
 
       - name: Run hardhat tests
-        run: yarn test:hardhat
+        run: yarn test
         env:
           MAINNET_RPC_URL: ${{ secrets.MAINNET_RPC_URL }}
