@@ -90,11 +90,7 @@ typings/
 Thumbs.db
 
 # Ignore built ts files
-tests/runner
-dist
+lib
 out
 cache*
 /artifacts
-
-ssh
-*.pem

@@ -3,7 +3,7 @@
     "target": "esnext",
     "module": "nodenext",
     "moduleResolution": "nodenext",
-    "outDir": "dist",
+    "outDir": "lib",
     "baseUrl": ".",
     "strict": true,
     "declaration": true,
@@ -12,6 +12,6 @@
     "skipLibCheck": true,
     "noUncheckedIndexedAccess": true
   },
-  "include": ["src", "types", "test"],
+  "include": ["src", "test"],
   "files": ["hardhat.config.ts"]
 }

@@ -24,7 +24,7 @@ import type {
 export interface ExecutorInterface extends Interface {
   getFunction(
     nameOrSignature:
-      | "call_m08sKaj"
+      | "call_g0oyU7o"
       | "exec_606BaXt"
       | "owner"
       | "transfer"
@@ -32,8 +32,8 @@ export interface ExecutorInterface extends Interface {
   ): FunctionFragment;
 
   encodeFunctionData(
-    functionFragment: "call_m08sKaj",
-    values: [BytesLike, BigNumberish, BytesLike]
+    functionFragment: "call_g0oyU7o",
+    values: [AddressLike, BigNumberish, BytesLike, BytesLike]
   ): string;
   encodeFunctionData(
     functionFragment: "exec_606BaXt",
@@ -50,7 +50,7 @@ export interface ExecutorInterface extends Interface {
   ): string;
 
   decodeFunctionResult(
-    functionFragment: "call_m08sKaj",
+    functionFragment: "call_g0oyU7o",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -108,8 +108,13 @@ export interface Executor extends BaseContract {
     event?: TCEvent
   ): Promise<this>;
 
-  call_m08sKaj: TypedContractMethod<
-    [config: BytesLike, value: BigNumberish, callData: BytesLike],
+  call_g0oyU7o: TypedContractMethod<
+    [
+      target: AddressLike,
+      value: BigNumberish,
+      context: BytesLike,
+      callData: BytesLike
+    ],
     [void],
     "payable"
   >;
@@ -135,9 +140,14 @@ export interface Executor extends BaseContract {
   ): T;
 
   getFunction(
-    nameOrSignature: "call_m08sKaj"
+    nameOrSignature: "call_g0oyU7o"
   ): TypedContractMethod<
-    [config: BytesLike, value: BigNumberish, callData: BytesLike],
+    [
+      target: AddressLike,
+      value: BigNumberish,
+      context: BytesLike,
+      callData: BytesLike
+    ],
     [void],
     "payable"
   >;

@@ -1,3 +1,5 @@
+import "evm-maths";
+
 import {
   AbiCoder,
   BigNumberish,
@@ -37,6 +39,11 @@ export interface AssetRequest {
   amount: BigNumberish;
 }
 
+export interface CallbackContext {
+  sender: string;
+  dataIndex: BigNumberish;
+}
+
 export class ExecutorEncoder {
   public static readonly EXECUTOR_IFC = Executor__factory.createInterface();
   public static readonly WETH_IFC = WETH__factory.createInterface();
@@ -58,11 +65,12 @@ export class ExecutorEncoder {
     target: string,
     value: BigNumberish,
     callData: BytesLike,
-    fallbackDataIndex: Numeric = 2n ** 96n - 1n,
+    context: CallbackContext = { sender: ZeroAddress, dataIndex: 0n },
   ) {
-    return ExecutorEncoder.EXECUTOR_IFC.encodeFunctionData("call_m08sKaj", [
-      "0x" + fallbackDataIndex.toString(16).padStart(24, "0") + target.substring(2),
+    return ExecutorEncoder.EXECUTOR_IFC.encodeFunctionData("call_g0oyU7o", [
+      target,
       value,
+      "0x" + context.dataIndex.toString(16).padStart(24, "0") + context.sender.substring(2),
       callData,
     ]);
   }
@@ -94,8 +102,8 @@ export class ExecutorEncoder {
     this.executor = Executor__factory.connect(address, runner);
   }
 
-  pushCall(target: string, value: BigNumberish, callData: BytesLike, fallbackDataIndex: Numeric = 2n ** 96n - 1n) {
-    this.calls.push(ExecutorEncoder.buildCall(target, value, callData, fallbackDataIndex));
+  pushCall(target: string, value: BigNumberish, callData: BytesLike, context?: CallbackContext) {
+    this.calls.push(ExecutorEncoder.buildCall(target, value, callData, context));
 
     return this;
   }
@@ -168,7 +176,10 @@ export class ExecutorEncoder {
           ],
         ),
       ]),
-      3n, // receiveFlashLoan(address[],uint256[],uint256[],bytes)
+      {
+        sender: balancerVaultAddress,
+        dataIndex: 3n, // receiveFlashLoan(address[],uint256[],uint256[],bytes)
+      },
     );
   }
 
@@ -190,7 +201,10 @@ export class ExecutorEncoder {
           ],
         ),
       ]),
-      4n, // onFlashLoan(address,address,uint256,uint256,bytes)
+      {
+        sender: makerVaultAddress,
+        dataIndex: 4n, // onFlashLoan(address,address,uint256,uint256,bytes)
+      },
     );
   }
 
@@ -230,7 +244,10 @@ export class ExecutorEncoder {
         ),
         0,
       ]),
-      4n, // executeOperation(address[],uint256[],uint256[],address,bytes)
+      {
+        sender: aaveV2PoolAddress,
+        dataIndex: 4n, // executeOperation(address[],uint256[],uint256[],address,bytes)
+      },
     );
   }
 
@@ -272,7 +289,10 @@ export class ExecutorEncoder {
         ),
         0,
       ]),
-      4n, // executeOperation(address[],uint256[],uint256[],address,bytes)
+      {
+        sender: aaveV3PoolAddress,
+        dataIndex: 4n, // executeOperation(address[],uint256[],uint256[],address,bytes)
+      },
     );
   }
 
@@ -309,7 +329,10 @@ export class ExecutorEncoder {
           ],
         ),
       ]),
-      3n, // uniswapV2Call(address,uint256,uint256,bytes)
+      {
+        sender: pool,
+        dataIndex: 3n, // uniswapV2Call(address,uint256,uint256,bytes)
+      },
     );
   }
 
@@ -346,7 +369,10 @@ export class ExecutorEncoder {
           ],
         ),
       ]),
-      2n, // uniswapV3FlashCallback(uint256,uint256,bytes)
+      {
+        sender: pool,
+        dataIndex: 2n, // uniswapV3FlashCallback(uint256,uint256,bytes)
+      },
     );
   }
 
@@ -364,7 +390,10 @@ export class ExecutorEncoder {
           [callbackCalls.concat([ExecutorEncoder.buildErc20Approve(asset, morphoBlueAddress, amount)]), "0x"],
         ),
       ]),
-      1n, // onMorphoFlashLoan(uint256,bytes)
+      {
+        sender: morphoBlueAddress,
+        dataIndex: 1n, // onMorphoFlashLoan(uint256,bytes)
+      },
     );
   }
 
@@ -724,7 +753,10 @@ export class ExecutorEncoder {
         repaidShares,
         AbiCoder.defaultAbiCoder().encode(["bytes[]", "bytes"], [callbackCalls, "0x"]),
       ]),
-      1n, // onMorphoLiquidate(uint256,bytes)
+      {
+        sender: morphoBlueAddress,
+        dataIndex: 1n, // onMorphoLiquidate(uint256,bytes)
+      },
     );
   }
 }

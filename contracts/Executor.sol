@@ -3,8 +3,7 @@ pragma solidity ^0.8.25;
 
 import {IExecutor} from "./interfaces/IExecutor.sol";
 
-uint256 constant ENABLE_FALLBACK_TLOC = 0;
-uint256 constant FALLBACK_DATA_INDEX_TLOC = 1;
+uint256 constant FALLBACK_CONTEXT_TLOC = 0;
 
 contract Executor is IExecutor {
     address public owner;
@@ -26,30 +25,27 @@ contract Executor is IExecutor {
     function exec_606BaXt(bytes[] memory data) external payable {
         require(msg.sender == owner);
 
-        _tstore(ENABLE_FALLBACK_TLOC, 1);
-
         _multicall(data);
-
-        _tstore(ENABLE_FALLBACK_TLOC, 0);
     }
 
     /// @notice Executes a normal call, requiring its success.
-    /// @param config The address to call concatenated to the corresponding fallback data index to use in a callback.
-    /// Set the fallback data index to type(uint96).max to prevent any callback.
+    /// @param target The target address to call.
     /// @param value The value of the call.
+    /// @param context The 32-bytes concatenation of:
+    /// - the address expected to call back. Set to address(0) to prevent any callback.
+    /// - the expected callback data index.
     /// @param callData the calldata of the call.
-    function call_m08sKaj(bytes32 config, uint256 value, bytes memory callData) external payable {
+    function call_g0oyU7o(address target, uint256 value, bytes32 context, bytes memory callData) external payable {
         require(msg.sender == address(this));
 
-        address target = address(uint160(uint256(config)));
-        uint256 prevFallbackDataIndex = _tload(FALLBACK_DATA_INDEX_TLOC);
+        bytes32 prevContext = _tload(FALLBACK_CONTEXT_TLOC);
 
-        _tstore(FALLBACK_DATA_INDEX_TLOC, uint256(config >> 160));
+        _tstore(FALLBACK_CONTEXT_TLOC, context);
 
         (bool success, bytes memory returnData) = target.call{value: value}(callData);
         if (!success) _revert(returnData);
 
-        _tstore(FALLBACK_DATA_INDEX_TLOC, prevFallbackDataIndex);
+        _tstore(FALLBACK_CONTEXT_TLOC, prevContext);
     }
 
     /// @notice Transfers ETH to the recipient.
@@ -69,10 +65,10 @@ contract Executor is IExecutor {
     receive() external payable {}
 
     fallback(bytes calldata) external payable returns (bytes memory returnData) {
-        require(_tload(ENABLE_FALLBACK_TLOC) == 1);
+        bytes32 context = _tload(FALLBACK_CONTEXT_TLOC);
+        require(msg.sender == address(uint160(uint256(context))));
 
-        uint256 dataIndex = _tload(FALLBACK_DATA_INDEX_TLOC);
-        require(dataIndex != type(uint96).max);
+        uint256 dataIndex = uint256(context >> 160);
 
         bytes memory fallbackData;
         assembly ("memory-safe") {
@@ -113,13 +109,13 @@ contract Executor is IExecutor {
         }
     }
 
-    function _tload(uint256 tloc) internal view returns (uint256 value) {
+    function _tload(uint256 tloc) internal view returns (bytes32 value) {
         assembly ("memory-safe") {
             value := tload(tloc)
         }
     }
 
-    function _tstore(uint256 tloc, uint256 value) internal {
+    function _tstore(uint256 tloc, bytes32 value) internal {
         assembly ("memory-safe") {
             tstore(tloc, value)
         }

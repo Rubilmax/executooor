@@ -9,9 +9,9 @@ const _abi = [
   {
     inputs: [
       {
-        internalType: "bytes32",
-        name: "config",
-        type: "bytes32",
+        internalType: "address",
+        name: "target",
+        type: "address",
       },
       {
         internalType: "uint256",
@@ -19,12 +19,17 @@ const _abi = [
         type: "uint256",
       },
       {
+        internalType: "bytes32",
+        name: "context",
+        type: "bytes32",
+      },
+      {
         internalType: "bytes",
         name: "callData",
         type: "bytes",
       },
     ],
-    name: "call_m08sKaj",
+    name: "call_g0oyU7o",
     outputs: [],
     stateMutability: "payable",
     type: "function",

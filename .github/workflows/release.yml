@@ -32,7 +32,7 @@ jobs:
         run: yarn --frozen-lockfile
 
       - name: Build package
-        run: yarn build
+        run: yarn build:pkg
 
       - name: Publish package
         env:
