@@ -127,7 +127,7 @@ export class ExecutorEncoder {
   /* BASE */
 
   transfer(recipient: string, amount: BigNumberish) {
-    if (recipient == ZeroAddress) throw Error("recipient should not be zero: use tip() instead");
+    if (recipient === ZeroAddress) throw Error("recipient should not be zero: use tip() instead");
 
     return this.pushCall(
       this.address,
