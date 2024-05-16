@@ -1,5 +1,5 @@
 {
-  "name": "multidelegatecall",
+  "name": "executooor",
   "version": "1.0.0",
   "author": {
     "name": "Romain (Rubilmax) Milon",
@@ -19,10 +19,10 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Rubilmax/multidelegatecall.git"
+    "url": "git+https://github.com/Rubilmax/executooor.git"
   },
   "bugs": {
-    "url": "https://github.com/Rubilmax/multidelegatecall/issues"
+    "url": "https://github.com/Rubilmax/executooor/issues"
   },
   "keywords": [
     "mev",

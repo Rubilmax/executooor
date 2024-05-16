@@ -1,4 +1,4 @@
-# multidelegatecall
+# executooor
 
 [![npm package][npm-img]][npm-url]
 [![Build Status][build-img]][build-url]
@@ -11,7 +11,7 @@
 
 Ethereum's environment evolves fast. So fast that you can't keep up writing and deploying a new contract everytime you want to do something atomically onchain (not mentioning you also have to approve this freshly deployed contract to spend your favorite ERC20/ERC721!).
 
-Welcome `multidelegatecall`'s `Executor` contract:
+Welcome `executooor`'s `Executor` contract:
 
 1. Calculate whatever you need to submit your execution
 2. Chain calls / delegatecalls as needed to execute whatever you want to execute atomically onchain (using `ethers-v6`)
@@ -24,11 +24,11 @@ Welcome `multidelegatecall`'s `Executor` contract:
 ## Installation
 
 ```bash
-npm install multidelegatecall
+npm install executooor
 ```
 
 ```bash
-yarn add multidelegatecall
+yarn add executooor
 ```
 
 ---
@@ -44,7 +44,7 @@ Deploy your very own `Executor` contract with the owner address you want, once a
 Create an `ExecutorEncoder` instance and chain any calls wanted. Then, submit the transaction using `exec` (or populate the transaction using `populateExec`!).
 
 ```typescript
-import { ExecutorEncoder } from "multidelegatecall";
+import { ExecutorEncoder } from "executooor";
 
 const encoder = new ExecutorEncoder(executorAddress, signer);
 
@@ -69,16 +69,16 @@ await encoder
   .exec();
 ```
 
-[build-img]: https://github.com/rubilmax/multidelegatecall/actions/workflows/release.yml/badge.svg
-[build-url]: https://github.com/rubilmax/multidelegatecall/actions/workflows/release.yml
-[downloads-img]: https://img.shields.io/npm/dt/multidelegatecall
-[downloads-url]: https://www.npmtrends.com/multidelegatecall
-[npm-img]: https://img.shields.io/npm/v/multidelegatecall
-[npm-url]: https://www.npmjs.com/package/multidelegatecall
-[issues-img]: https://img.shields.io/github/issues/rubilmax/multidelegatecall
-[issues-url]: https://github.com/rubilmax/multidelegatecall/issues
-[codecov-img]: https://codecov.io/gh/rubilmax/multidelegatecall/branch/main/graph/badge.svg
-[codecov-url]: https://codecov.io/gh/rubilmax/multidelegatecall
+[build-img]: https://github.com/rubilmax/executooor/actions/workflows/release.yml/badge.svg
+[build-url]: https://github.com/rubilmax/executooor/actions/workflows/release.yml
+[downloads-img]: https://img.shields.io/npm/dt/executooor
+[downloads-url]: https://www.npmtrends.com/executooor
+[npm-img]: https://img.shields.io/npm/v/executooor
+[npm-url]: https://www.npmjs.com/package/executooor
+[issues-img]: https://img.shields.io/github/issues/rubilmax/executooor
+[issues-url]: https://github.com/rubilmax/executooor/issues
+[codecov-img]: https://codecov.io/gh/rubilmax/executooor/branch/main/graph/badge.svg
+[codecov-url]: https://codecov.io/gh/rubilmax/executooor
 [semantic-release-img]: https://img.shields.io/badge/%20%20%F0%9F%93%A6%F0%9F%9A%80-semantic--release-e10079.svg
 [semantic-release-url]: https://github.com/semantic-release/semantic-release
 [commitizen-img]: https://img.shields.io/badge/commitizen-friendly-brightgreen.svg
