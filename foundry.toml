@@ -1,6 +1,0 @@
-[profile.default]
-via-ir = true
-src = "contracts"
-script = "/dev/null"
-test = "/dev/null"
-optimizer-runs = 200

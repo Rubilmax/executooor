@@ -27,11 +27,16 @@ jobs:
           node-version: 18
           cache: yarn
 
-      - name: Install Foundry
-        uses: foundry-rs/foundry-toolchain@v1
-
       - name: Install dependencies
         run: yarn --frozen-lockfile
+
+      - name: Save hardhat cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            cache
+            artifacts
+          key: ${{ github.base_ref || github.ref_name }}-hardhat
 
       - name: Run hardhat tests
         run: yarn test:hardhat

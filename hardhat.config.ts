@@ -1,6 +1,5 @@
 import "@nomicfoundation/hardhat-chai-matchers";
 import "@nomicfoundation/hardhat-ethers";
-import "@nomicfoundation/hardhat-foundry";
 import "@typechain/hardhat";
 import "dotenv/config";
 import "evm-maths";

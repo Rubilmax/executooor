@@ -13,13 +13,9 @@
   ],
   "scripts": {
     "prepare": "husky",
-    "build:pkg": "tsc --build ./tsconfig.build.json",
-    "build:forge": "forge build",
-    "build:hardhat": "hardhat compile",
     "typecheck": "tsc --noEmit",
-    "test:hardhat": "LIQUIDATOR_LOG_LEVEL=error hardhat test",
-    "test:hardhat:info": "LIQUIDATOR_LOG_LEVEL=info hardhat test",
-    "test:hardhat:debug": "LIQUIDATOR_LOG_LEVEL=debug hardhat test"
+    "build": "hardhat compile --force && tsc --build ./tsconfig.build.json",
+    "test": "hardhat test"
   },
   "repository": {
     "type": "git",
@@ -46,7 +42,6 @@
     "@commitlint/config-conventional": "^17.8.0",
     "@nomicfoundation/hardhat-chai-matchers": "^2.0.6",
     "@nomicfoundation/hardhat-ethers": "^3.0.6",
-    "@nomicfoundation/hardhat-foundry": "^1.1.2",
     "@nomicfoundation/hardhat-network-helpers": "^1.0.10",
     "@trivago/prettier-plugin-sort-imports": "^4.3.0",
     "@typechain/ethers-v6": "^0.5.1",
