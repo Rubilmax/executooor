@@ -1,10 +1,9 @@
 ---
 name: "🐛 Bug Report"
 about: Report a reproducible bug or regression.
-title: ''
+title: ""
 labels: bug
-assignees: ''
-
+assignees: ""
 ---
 
 ## Current Behavior
@@ -17,9 +16,9 @@ assignees: ''
 
 ## Steps to Reproduce the Problem
 
-  1.
-  1.
-  1.
+1.
+1.
+1.
 
 ## Environment
 

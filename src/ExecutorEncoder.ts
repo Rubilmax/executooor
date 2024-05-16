@@ -9,7 +9,6 @@ import {
   toBigInt,
   toUtf8Bytes,
 } from "ethers";
-
 import {
   CErc20__factory,
   AaveV2LendingPool__factory,
@@ -26,9 +25,10 @@ import {
   ERC20__factory,
   BalancerVault__factory,
 } from "ethers-types";
-import { MarketParamsStruct } from "ethers-types/dist/protocols/morpho/blue/MorphoBlue";
-import { Executor, Executor__factory } from "./types";
 import { PayableOverrides } from "ethers-types/dist/common";
+import { MarketParamsStruct } from "ethers-types/dist/protocols/morpho/blue/MorphoBlue";
+
+import { Executor, Executor__factory } from "./types";
 
 export type PromiseOrValue<T> = T | Promise<T>;
 

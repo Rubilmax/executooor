@@ -1,52 +1,60 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.0;
+pragma solidity ^0.8.25;
 
-import {IExecutor, ExecContext} from "./interfaces/IExecutor.sol";
+import {IExecutor} from "./interfaces/IExecutor.sol";
 
-uint96 constant UNSET_DATA_INDEX = type(uint96).max;
+uint256 constant ENABLE_FALLBACK_TLOC = 0;
+uint256 constant FALLBACK_DATA_INDEX_TLOC = 1;
 
 contract Executor is IExecutor {
-    ExecContext internal _context;
+    address public owner;
 
     constructor(address _owner) {
-        _context = ExecContext({owner: _owner, fallbackDataIndex: UNSET_DATA_INDEX});
+        owner = _owner;
     }
 
     /* EXTERNAL */
 
-    /// @notice Returns the owner of the contract.
-    function owner() external view returns (address) {
-        return _context.owner;
-    }
-
     /// @notice Transfers ownership of the contract.
     function transferOwnership(address newOwner) external payable {
-        require(msg.sender == _context.owner);
+        require(msg.sender == owner);
 
-        _context.owner = newOwner;
+        owner = newOwner;
     }
 
+    /// @notice Executes a batch of calls.
     function exec_606BaXt(bytes[] memory data) external payable {
-        require(msg.sender == _context.owner);
+        require(msg.sender == owner);
+
+        _tstore(ENABLE_FALLBACK_TLOC, 1);
 
         _multicall(data);
+
+        _tstore(ENABLE_FALLBACK_TLOC, 0);
     }
 
     /// @notice Executes a normal call, requiring its success.
+    /// @param config The address to call concatenated to the corresponding fallback data index to use in a callback.
+    /// Set the fallback data index to type(uint96).max to prevent any callback.
+    /// @param value The value of the call.
+    /// @param callData the calldata of the call.
     function call_m08sKaj(bytes32 config, uint256 value, bytes memory callData) external payable {
         require(msg.sender == address(this));
 
         address target = address(uint160(uint256(config)));
-        uint96 prevFallbackDataIndex = _context.fallbackDataIndex;
+        uint256 prevFallbackDataIndex = _tload(FALLBACK_DATA_INDEX_TLOC);
 
-        _context.fallbackDataIndex = uint96(uint256(config >> 160));
+        _tstore(FALLBACK_DATA_INDEX_TLOC, uint256(config >> 160));
 
         (bool success, bytes memory returnData) = target.call{value: value}(callData);
         if (!success) _revert(returnData);
 
-        _context.fallbackDataIndex = prevFallbackDataIndex;
+        _tstore(FALLBACK_DATA_INDEX_TLOC, prevFallbackDataIndex);
     }
 
+    /// @notice Transfers ETH to the recipient.
+    /// @param recipient The recipient of the transfer. Set to address(0) to transfer to the coinbase.
+    /// @param amount The amount to transfer. Automatically minimumed to the current ETH balance.
     function transfer(address recipient, uint256 amount) external payable {
         require(msg.sender == address(this));
 
@@ -60,9 +68,11 @@ contract Executor is IExecutor {
 
     receive() external payable {}
 
-    fallback(bytes calldata) external payable returns (bytes memory) {
-        uint96 dataIndex = _context.fallbackDataIndex;
-        require(dataIndex != UNSET_DATA_INDEX);
+    fallback(bytes calldata) external payable returns (bytes memory returnData) {
+        require(_tload(ENABLE_FALLBACK_TLOC) == 1);
+
+        uint256 dataIndex = _tload(FALLBACK_DATA_INDEX_TLOC);
+        require(dataIndex != type(uint96).max);
 
         bytes memory fallbackData;
         assembly ("memory-safe") {
@@ -76,11 +86,10 @@ contract Executor is IExecutor {
             mstore(0x40, add(fallbackData, add(32, length)))
         }
 
-        (bytes[] memory multicallData, bytes memory returnData) = abi.decode(fallbackData, (bytes[], bytes));
+        bytes[] memory multicallData;
+        (multicallData, returnData) = abi.decode(fallbackData, (bytes[], bytes));
 
         _multicall(multicallData);
-
-        return returnData;
     }
 
     /* INTERNAL */
@@ -101,6 +110,18 @@ contract Executor is IExecutor {
 
         assembly ("memory-safe") {
             revert(add(32, returnData), length)
+        }
+    }
+
+    function _tload(uint256 tloc) internal view returns (uint256 value) {
+        assembly ("memory-safe") {
+            value := tload(tloc)
+        }
+    }
+
+    function _tstore(uint256 tloc, uint256 value) internal {
+        assembly ("memory-safe") {
+            tstore(tloc, value)
         }
     }
 

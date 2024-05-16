@@ -34,19 +34,20 @@
     "smart contract"
   ],
   "dependencies": {
-    "ethers": "^6.11.1",
-    "ethers-types": "^3.7.0"
+    "ethers": "^6.12.1",
+    "ethers-types": "^3.15.0"
   },
   "devDependencies": {
+    "@commitlint/cli": "^17.8.0",
+    "@commitlint/config-conventional": "^17.8.0",
     "@nomicfoundation/hardhat-chai-matchers": "^2.0.6",
-    "@nomicfoundation/hardhat-ethers": "^3.0.5",
-    "@nomicfoundation/hardhat-foundry": "^1.1.1",
+    "@nomicfoundation/hardhat-ethers": "^3.0.6",
+    "@nomicfoundation/hardhat-foundry": "^1.1.2",
     "@nomicfoundation/hardhat-network-helpers": "^1.0.10",
     "@trivago/prettier-plugin-sort-imports": "^4.3.0",
     "@typechain/ethers-v6": "^0.5.1",
     "@typechain/hardhat": "^9.1.0",
-    "@types/chai": "^4.3.12",
-    "@types/lodash": "^4.17.0",
+    "@types/chai": "^4.3.16",
     "@types/mocha": "^10.0.6",
     "@types/simple-mock": "^0.8.6",
     "chai": "^4.4.1",
@@ -55,10 +56,9 @@
     "cz-conventional-changelog": "^3.3.0",
     "dotenv": "^16.4.5",
     "evm-maths": "^6.0.3",
-    "hardhat": "2.20.1",
+    "hardhat": "2.22.4",
     "hardhat-deal": "^3.0.2",
     "hardhat-gas-reporter": "^1.0.10",
-    "hardhat-tracer": "^2.8.1",
     "husky": "^9.0.11",
     "lint-staged": "^15.2.2",
     "prettier": "^3.2.5",
@@ -66,16 +66,21 @@
     "solidity-coverage": "^0.8.11",
     "ts-node": "^10.9.2",
     "typechain": "^8.3.2",
-    "typescript": "^5.4.2"
+    "typescript": "^5.4.5"
+  },
+  "lint-staged": {
+    "*.sol": "forge fmt",
+    "*.ts": "prettier"
   },
   "config": {
     "commitizen": {
       "path": "./node_modules/cz-conventional-changelog"
     }
   },
-  "lint-staged": {
-    "*.sol": "forge fmt",
-    "*.ts": "prettier"
+  "commitlint": {
+    "extends": [
+      "@commitlint/config-conventional"
+    ]
   },
   "release": {
     "branches": [
@@ -125,13 +130,12 @@
   "prettier": {
     "printWidth": 120,
     "importOrder": [
-      "^(?<!(src|types|test|scripts)).*",
-      "^src",
-      "^types",
-      "^test",
-      "^scripts",
+      "^ethers",
       "^\\."
     ],
-    "importOrderSeparation": true
+    "importOrderSeparation": true,
+    "plugins": [
+      "@trivago/prettier-plugin-sort-imports"
+    ]
   }
 }

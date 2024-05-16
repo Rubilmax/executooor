@@ -1,12 +1,12 @@
+import { SignerWithAddress } from "@nomicfoundation/hardhat-ethers/signers";
 import { expect } from "chai";
-import { ethers, tracer } from "hardhat";
+import { ethers } from "hardhat";
 import { deal } from "hardhat-deal";
 
-import { ExecutorEncoder } from "../src/ExecutorEncoder";
-
-import { AaveV2LendingPool__factory, AaveV3Pool__factory, BalancerVault__factory, ERC20__factory } from "ethers-types";
 import { AbiCoder, BigNumberish, MaxUint256, getCreate2Address, keccak256, solidityPacked } from "ethers";
-import { SignerWithAddress } from "@nomicfoundation/hardhat-ethers/signers";
+import { AaveV2LendingPool__factory, AaveV3Pool__factory, BalancerVault__factory, ERC20__factory } from "ethers-types";
+
+import { ExecutorEncoder } from "../src/ExecutorEncoder";
 
 export const dai = "0x6B175474E89094C44Da98b954EedeAC495271d0F";
 export const usdc = "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48";
@@ -223,16 +223,12 @@ describe("ExecutorEncoder", () => {
   it("should not trigger fallback via Balancer from unknown account", async () => {
     const balancerVault = BalancerVault__factory.connect(balancerVaultAddress, hacker);
 
-    tracer.ignoreNext = true;
-
     await expect(
       balancerVault.flashLoan(encoder.address, [dai], [BigInt.WAD * 1_000_000n], "0x"),
     ).to.be.revertedWithoutReason();
   });
 
   it("should not trigger fallback from unknown account", async () => {
-    tracer.ignoreNext = true;
-
     await expect(
       encoder.executor.connect(hacker).fallback!({
         data: ExecutorEncoder.buildErc20Transfer(dai, hacker.address, 1),
@@ -241,14 +237,10 @@ describe("ExecutorEncoder", () => {
   });
 
   it("should not transferOwnership with exec", async () => {
-    tracer.ignoreNext = true;
-
     await expect(encoder.transferOwnership(hacker.address).exec()).to.be.revertedWithoutReason();
   });
 
   it("should not transfer without exec", async () => {
-    tracer.ignoreNext = true;
-
     await expect(encoder.executor.transfer(hacker.address, 1)).to.be.revertedWithoutReason();
   });
 

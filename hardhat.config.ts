@@ -1,15 +1,13 @@
-import { HardhatUserConfig } from "hardhat/config";
-import "hardhat-deal";
-import "hardhat-tracer";
-import "hardhat-gas-reporter";
-import "solidity-coverage";
-import "evm-maths";
-import "dotenv/config";
-
-import "@typechain/hardhat";
+import "@nomicfoundation/hardhat-chai-matchers";
 import "@nomicfoundation/hardhat-ethers";
 import "@nomicfoundation/hardhat-foundry";
-import "@nomicfoundation/hardhat-chai-matchers";
+import "@typechain/hardhat";
+import "dotenv/config";
+import "evm-maths";
+import "hardhat-deal";
+import "hardhat-gas-reporter";
+import { HardhatUserConfig } from "hardhat/config";
+import "solidity-coverage";
 
 export const rpcUrl = process.env.MAINNET_RPC_URL;
 if (!rpcUrl) throw Error(`no RPC url provided`);
@@ -21,14 +19,10 @@ const config: HardhatUserConfig = {
       chainId: 1,
       forking: {
         url: rpcUrl,
-        blockNumber: 19881284,
+        blockNumber: 18_843_810,
       },
       allowBlocksWithSameTimestamp: true,
       accounts: { count: 2 },
-    },
-    mainnet: {
-      chainId: 1,
-      url: rpcUrl,
     },
   },
   solidity: {
@@ -54,10 +48,6 @@ const config: HardhatUserConfig = {
   },
   typechain: {
     outDir: "src/types/",
-  },
-  tracer: {
-    defaultVerbosity: 1,
-    gasCost: true,
   },
 };
 
