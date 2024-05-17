@@ -96,9 +96,17 @@ export class ExecutorEncoder {
 
   constructor(
     public readonly address: string,
-    public readonly runner?: ContractRunner | null,
+    runner?: ContractRunner | null,
   ) {
     this.executor = Executor__factory.connect(address, runner);
+  }
+
+  get runner() {
+    const { runner } = this.executor;
+
+    if (!runner) throw Error("runner not available");
+
+    return runner;
   }
 
   pushCall(target: string, value: BigNumberish, callData: BytesLike, context?: CallbackContext) {
