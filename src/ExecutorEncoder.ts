@@ -5,7 +5,6 @@ import {
   BigNumberish,
   BytesLike,
   ContractRunner,
-  Numeric,
   ZeroAddress,
   keccak256,
   toBigInt,
