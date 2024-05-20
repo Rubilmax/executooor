@@ -18,7 +18,7 @@ const config: HardhatUserConfig = {
       chainId: 1,
       forking: {
         url: rpcUrl,
-        blockNumber: 18_843_810,
+        blockNumber: 19_909_475,
       },
       allowBlocksWithSameTimestamp: true,
       accounts: { count: 2 },
