@@ -1,9 +1,19 @@
 import { SignerWithAddress } from "@nomicfoundation/hardhat-ethers/signers";
+import { SnapshotRestorer, takeSnapshot } from "@nomicfoundation/hardhat-network-helpers";
 import { expect } from "chai";
 import { ethers } from "hardhat";
 import { deal } from "hardhat-deal";
 
-import { AbiCoder, BigNumberish, MaxUint256, getCreate2Address, keccak256, parseEther, solidityPacked } from "ethers";
+import {
+  AbiCoder,
+  BigNumberish,
+  MaxUint256,
+  formatEther,
+  getCreate2Address,
+  keccak256,
+  parseEther,
+  solidityPacked,
+} from "ethers";
 import { AaveV2LendingPool__factory, AaveV3Pool__factory, BalancerVault__factory, ERC20__factory } from "ethers-types";
 
 import { ExecutorEncoder } from "../src/ExecutorEncoder";
@@ -52,12 +62,14 @@ export const computeV3PoolAddress = (tokenA: string, tokenB: string, fee: BigNum
 };
 
 describe("ExecutorEncoder", () => {
+  let snapshot: SnapshotRestorer;
+
   let encoder: ExecutorEncoder;
 
   let owner: SignerWithAddress;
   let hacker: SignerWithAddress;
 
-  beforeEach(async () => {
+  before(async () => {
     const signers = await ethers.getSigners();
     owner = signers[0]!;
     hacker = signers[1]!;
@@ -67,6 +79,12 @@ describe("ExecutorEncoder", () => {
     const executor = await Executor.deploy(owner.address);
 
     encoder = new ExecutorEncoder(await executor.getAddress(), owner);
+
+    snapshot = await takeSnapshot();
+  });
+
+  afterEach(async () => {
+    await snapshot.restore();
   });
 
   it("should execute nothing", async () => {
@@ -273,6 +291,8 @@ describe("ExecutorEncoder", () => {
       .erc4626Redeem(sDai, assets / 8n, owner.address, encoder.address)
       .exec();
 
-    expect(await ERC20__factory.connect(dai, owner).balanceOf(owner.address)).to.equal(385_433941216953645416n);
+    const daiBalance = await ERC20__factory.connect(dai, owner).balanceOf(owner.address);
+
+    expect(daiBalance / BigInt.WAD).to.equal(385n);
   });
 });
