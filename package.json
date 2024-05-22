@@ -54,7 +54,7 @@
     "conventional-changelog-conventionalcommits": "^7.0.2",
     "cz-conventional-changelog": "^3.3.0",
     "dotenv": "^16.4.5",
-    "hardhat": "2.22.4",
+    "hardhat": "^2.22.4",
     "hardhat-deal": "^3.0.2",
     "hardhat-gas-reporter": "^1.0.10",
     "husky": "^9.0.11",

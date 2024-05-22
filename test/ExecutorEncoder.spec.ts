@@ -221,7 +221,7 @@ describe("ExecutorEncoder", () => {
     expect(wethBalance.toWadFloat()).to.be.greaterThan(0.025);
   });
 
-  it.only("should swap sDAI for ETH via 1inch", async () => {
+  it("should swap sDAI for ETH via 1inch", async () => {
     const amountIn = 1000_000000n;
 
     await deal(usdc, encoder.address, amountIn);
