@@ -25,6 +25,7 @@ import {
   IERC3156FlashLender__factory,
   ERC20__factory,
   BalancerVault__factory,
+  ERC4626__factory,
 } from "ethers-types";
 import { PayableOverrides } from "ethers-types/dist/common";
 import { MarketParamsStruct } from "ethers-types/dist/protocols/morpho/blue/MorphoBlue";
@@ -47,6 +48,7 @@ export class ExecutorEncoder {
   public static readonly EXECUTOR_IFC = Executor__factory.createInterface();
   public static readonly WETH_IFC = WETH__factory.createInterface();
   public static readonly ERC20_IFC = ERC20__factory.createInterface();
+  public static readonly ERC4626_IFC = ERC4626__factory.createInterface();
   public static readonly ERC3156_LENDER_IFC = IERC3156FlashLender__factory.createInterface();
   public static readonly BALANCER_VAULT_IFC = BalancerVault__factory.createInterface();
   public static readonly C_TOKEN_IFC = CErc20__factory.createInterface();
@@ -414,12 +416,36 @@ export class ExecutorEncoder {
     );
   }
 
+  /* WETH */
+
   wrapETH(weth: string, amount: BigNumberish) {
     return this.pushCall(weth, amount, ExecutorEncoder.WETH_IFC.encodeFunctionData("deposit"));
   }
 
   unwrapETH(weth: string, amount: BigNumberish) {
     return this.pushCall(weth, 0, ExecutorEncoder.WETH_IFC.encodeFunctionData("withdraw", [amount]));
+  }
+
+  /* ERC4626 */
+
+  erc4626Deposit(vault: string, assets: BigNumberish, owner: string) {
+    return this.pushCall(vault, 0, ExecutorEncoder.ERC4626_IFC.encodeFunctionData("deposit", [assets, owner]));
+  }
+
+  erc4626Mint(vault: string, shares: BigNumberish, owner: string) {
+    return this.pushCall(vault, 0, ExecutorEncoder.ERC4626_IFC.encodeFunctionData("mint", [shares, owner]));
+  }
+
+  erc4626Withdraw(vault: string, assets: BigNumberish, receiver: string, owner: string) {
+    return this.pushCall(
+      vault,
+      0,
+      ExecutorEncoder.ERC4626_IFC.encodeFunctionData("withdraw", [assets, receiver, owner]),
+    );
+  }
+
+  erc4626Redeem(vault: string, shares: BigNumberish, receiver: string, owner: string) {
+    return this.pushCall(vault, 0, ExecutorEncoder.ERC4626_IFC.encodeFunctionData("redeem", [shares, receiver, owner]));
   }
 
   /* COMPOUND */
