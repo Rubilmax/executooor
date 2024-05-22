@@ -3,7 +3,7 @@ import { expect } from "chai";
 import { ethers } from "hardhat";
 import { deal } from "hardhat-deal";
 
-import { AbiCoder, BigNumberish, MaxUint256, getCreate2Address, keccak256, solidityPacked } from "ethers";
+import { AbiCoder, BigNumberish, MaxUint256, getCreate2Address, keccak256, parseEther, solidityPacked } from "ethers";
 import { AaveV2LendingPool__factory, AaveV3Pool__factory, BalancerVault__factory, ERC20__factory } from "ethers-types";
 
 import { ExecutorEncoder } from "../src/ExecutorEncoder";
@@ -11,6 +11,7 @@ import { ExecutorEncoder } from "../src/ExecutorEncoder";
 export const dai = "0x6B175474E89094C44Da98b954EedeAC495271d0F";
 export const usdc = "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48";
 export const weth = "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2";
+export const sDai = "0x83F20F44975D03b1b09e64809B757c47f942BEeA";
 
 export const uniV2FactoryAddress = "0x5C69bEe701ef814a2B6a3EDD4B1652CB9cc5aA6f";
 export const uniV3FactoryAddress = "0x1F98431c8aD98523631AE4a59f267346ea31F984";
@@ -257,5 +258,21 @@ describe("ExecutorEncoder", () => {
 
   it("should not transfer without exec", async () => {
     await expect(encoder.executor.transfer(hacker.address, 1)).to.be.revertedWithoutReason();
+  });
+
+  it("should interact with sDAI as an ERC4626", async () => {
+    const assets = parseEther("1000");
+
+    await deal(dai, encoder.address, assets);
+
+    await encoder
+      .erc20Approve(dai, sDai, assets)
+      .erc4626Deposit(sDai, assets / 2n, encoder.address)
+      .erc4626Mint(sDai, assets / 4n, encoder.address)
+      .erc4626Withdraw(sDai, assets / 4n, owner.address, encoder.address)
+      .erc4626Redeem(sDai, assets / 8n, owner.address, encoder.address)
+      .exec();
+
+    expect(await ERC20__factory.connect(dai, owner).balanceOf(owner.address)).to.equal(385_433941216953645416n);
   });
 });
