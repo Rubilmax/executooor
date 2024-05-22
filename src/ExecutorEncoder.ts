@@ -124,11 +124,11 @@ export class ExecutorEncoder {
   }
 
   async exec(overrides: PayableOverrides & { from?: PromiseOrValue<string> } = {}) {
-    return this.executor.exec_606BaXt(this.flush(), overrides);
+    return await this.executor.exec_606BaXt(this.flush(), overrides);
   }
 
   async populateExec(overrides: PayableOverrides & { from?: PromiseOrValue<string> } = {}) {
-    return this.executor.exec_606BaXt.populateTransaction(this.flush(), overrides);
+    return await this.executor.exec_606BaXt.populateTransaction(this.flush(), overrides);
   }
 
   /* BASE */
