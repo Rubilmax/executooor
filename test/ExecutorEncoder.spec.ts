@@ -4,16 +4,7 @@ import { expect } from "chai";
 import { ethers } from "hardhat";
 import { deal } from "hardhat-deal";
 
-import {
-  AbiCoder,
-  BigNumberish,
-  MaxUint256,
-  formatEther,
-  getCreate2Address,
-  keccak256,
-  parseEther,
-  solidityPacked,
-} from "ethers";
+import { AbiCoder, BigNumberish, MaxUint256, getCreate2Address, keccak256, parseEther, solidityPacked } from "ethers";
 import { AaveV2LendingPool__factory, AaveV3Pool__factory, BalancerVault__factory, ERC20__factory } from "ethers-types";
 
 import { ExecutorEncoder } from "../src/ExecutorEncoder";

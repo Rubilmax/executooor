@@ -5,6 +5,7 @@ import "dotenv/config";
 import "evm-maths";
 import "hardhat-deal";
 import "hardhat-gas-reporter";
+import "hardhat-tracer";
 import { HardhatUserConfig } from "hardhat/config";
 import "solidity-coverage";
 

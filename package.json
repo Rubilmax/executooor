@@ -56,6 +56,7 @@
     "dotenv": "^16.4.5",
     "hardhat": "^2.22.4",
     "hardhat-deal": "^3.0.2",
+    "hardhat-tracer": "^3.0.0",
     "hardhat-gas-reporter": "^1.0.10",
     "husky": "^9.0.11",
     "lint-staged": "^15.2.2",
