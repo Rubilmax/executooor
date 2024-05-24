@@ -1,0 +1,10 @@
+[profile.default]
+src = "contracts"
+test = "/dev/null"
+script = "/dev/null"
+optimizer-runs = 200
+via-ir = true
+evm-version = "cancun"
+
+[profile.default.rpc_endpoints]
+mainnet = "${MAINNET_RPC_URL}"

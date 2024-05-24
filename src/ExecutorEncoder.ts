@@ -26,6 +26,7 @@ import {
   ERC20__factory,
   BalancerVault__factory,
   ERC4626__factory,
+  ERC20Wrapper__factory,
 } from "ethers-types";
 import { PayableOverrides } from "ethers-types/dist/common";
 import { MarketParamsStruct } from "ethers-types/dist/protocols/morpho/blue/MorphoBlue";
@@ -48,6 +49,7 @@ export class ExecutorEncoder {
   public static readonly EXECUTOR_IFC = Executor__factory.createInterface();
   public static readonly WETH_IFC = WETH__factory.createInterface();
   public static readonly ERC20_IFC = ERC20__factory.createInterface();
+  public static readonly ERC20_WRAPPER_IFC = ERC20Wrapper__factory.createInterface();
   public static readonly ERC4626_IFC = ERC4626__factory.createInterface();
   public static readonly ERC3156_LENDER_IFC = IERC3156FlashLender__factory.createInterface();
   public static readonly BALANCER_VAULT_IFC = BalancerVault__factory.createInterface();
@@ -424,6 +426,24 @@ export class ExecutorEncoder {
 
   unwrapETH(weth: string, amount: BigNumberish) {
     return this.pushCall(weth, 0, ExecutorEncoder.WETH_IFC.encodeFunctionData("withdraw", [amount]));
+  }
+
+  /* ERC20 Wrappers */
+
+  erc20WrapperDepositFor(asset: string, onBehalf: string, amount: BigNumberish) {
+    return this.pushCall(
+      asset,
+      0,
+      ExecutorEncoder.ERC20_WRAPPER_IFC.encodeFunctionData("depositFor", [onBehalf, amount]),
+    );
+  }
+
+  erc20WrapperWithdrawTo(asset: string, receiver: string, amount: BigNumberish) {
+    return this.pushCall(
+      asset,
+      0,
+      ExecutorEncoder.ERC20_WRAPPER_IFC.encodeFunctionData("withdrawTo", [receiver, amount]),
+    );
   }
 
   /* ERC4626 */
