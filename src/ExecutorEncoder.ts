@@ -778,7 +778,135 @@ export class ExecutorEncoder {
     );
   }
 
-  blueLiquidate(
+  morphoBlueSupplyCollateral(
+    morphoBlueAddress: string,
+    market: MarketParamsStruct,
+    collateral: BigNumberish,
+    onBehalf: string,
+    callbackCalls?: string[],
+  ) {
+    callbackCalls ??= [];
+
+    return this.pushCall(
+      morphoBlueAddress,
+      0,
+      ExecutorEncoder.MORPHO_BLUE_IFC.encodeFunctionData("supplyCollateral", [
+        market,
+        collateral,
+        onBehalf,
+        AbiCoder.defaultAbiCoder().encode(["bytes[]", "bytes"], [callbackCalls, "0x"]),
+      ]),
+      {
+        sender: morphoBlueAddress,
+        dataIndex: 1n, // onMorphoSupplyCollateral(uint256,bytes)
+      },
+    );
+  }
+
+  morphoBlueWithdrawCollateral(
+    morphoBlueAddress: string,
+    market: MarketParamsStruct,
+    collateral: BigNumberish,
+    onBehalf: string,
+    receiver: string,
+  ) {
+    return this.pushCall(
+      morphoBlueAddress,
+      0,
+      ExecutorEncoder.MORPHO_BLUE_IFC.encodeFunctionData("withdrawCollateral", [
+        market,
+        collateral,
+        onBehalf,
+        receiver,
+      ]),
+    );
+  }
+
+  morphoBlueSupply(
+    morphoBlueAddress: string,
+    market: MarketParamsStruct,
+    assets: BigNumberish,
+    shares: BigNumberish,
+    onBehalf: string,
+    callbackCalls?: string[],
+  ) {
+    callbackCalls ??= [];
+
+    return this.pushCall(
+      morphoBlueAddress,
+      0,
+      ExecutorEncoder.MORPHO_BLUE_IFC.encodeFunctionData("supply", [
+        market,
+        assets,
+        shares,
+        onBehalf,
+        AbiCoder.defaultAbiCoder().encode(["bytes[]", "bytes"], [callbackCalls, "0x"]),
+      ]),
+      {
+        sender: morphoBlueAddress,
+        dataIndex: 1n, // onMorphoSupply(uint256,bytes)
+      },
+    );
+  }
+
+  morphoBlueWithdraw(
+    morphoBlueAddress: string,
+    market: MarketParamsStruct,
+    assets: BigNumberish,
+    shares: BigNumberish,
+    onBehalf: string,
+    receiver: string,
+  ) {
+    return this.pushCall(
+      morphoBlueAddress,
+      0,
+      ExecutorEncoder.MORPHO_BLUE_IFC.encodeFunctionData("withdraw", [market, assets, shares, onBehalf, receiver]),
+    );
+  }
+
+  morphoBlueRepay(
+    morphoBlueAddress: string,
+    market: MarketParamsStruct,
+    assets: BigNumberish,
+    shares: BigNumberish,
+    onBehalf: string,
+    callbackCalls?: string[],
+  ) {
+    callbackCalls ??= [];
+
+    return this.pushCall(
+      morphoBlueAddress,
+      0,
+      ExecutorEncoder.MORPHO_BLUE_IFC.encodeFunctionData("repay", [
+        market,
+        assets,
+        shares,
+        onBehalf,
+        AbiCoder.defaultAbiCoder().encode(["bytes[]", "bytes"], [callbackCalls, "0x"]),
+      ]),
+      {
+        sender: morphoBlueAddress,
+        dataIndex: 1n, // onMorphoRepay(uint256,bytes)
+      },
+    );
+  }
+
+  morphoBlueBorrow(
+    morphoBlueAddress: string,
+    market: MarketParamsStruct,
+    assets: BigNumberish,
+    shares: BigNumberish,
+    onBehalf: string,
+    receiver: string,
+  ) {
+    return this.pushCall(
+      morphoBlueAddress,
+      0,
+      ExecutorEncoder.MORPHO_BLUE_IFC.encodeFunctionData("borrow", [market, assets, shares, onBehalf, receiver]),
+    );
+  }
+
+  morphoBlueLiquidate(
     morphoBlueAddress: string,
     market: MarketParamsStruct,
     borrower: string,
