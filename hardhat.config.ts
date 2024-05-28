@@ -21,6 +21,8 @@ const config: HardhatUserConfig = {
         url: rpcUrl,
         blockNumber: 19_909_475,
       },
+      gasPrice: 0,
+      initialBaseFeePerGas: 0,
       allowBlocksWithSameTimestamp: true,
       accounts: { count: 2 },
     },
