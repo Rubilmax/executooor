@@ -37,7 +37,7 @@ yarn add executooor
 
 ### Deployment
 
-Deploy your very own `Executor` contract with the owner address you want, once and for all.
+Deploy your very own `Executor` contract with the owner address you want, once and for all, using the [custom deployment interface](https://rubilmax.github.io/executooor/) (that you can also build locally).
 
 The exact deployment bytecode is given below for convenience. You can deploy the Executor by broadcasting a transaction with this exact bytecode, appended with the owner address you want (typically your bot address).
 
