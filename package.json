@@ -2,9 +2,9 @@
   "name": "executooor",
   "version": "1.0.0",
   "author": {
-    "name": "Romain (morpho-org) Milon",
+    "name": "Romain (Rubilmax) Milon",
     "email": "rmilon@gmail.com",
-    "url": "https://github.com/morpho-org"
+    "url": "https://github.com/rubilmax"
   },
   "license": "MIT",
   "main": "lib/index.js",
