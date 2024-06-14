@@ -1,3 +1,5 @@
+name: Deploy Web
+
 on:
   push:
     branches:
@@ -40,6 +42,8 @@ jobs:
 
       - name: Build with Next.js
         run: yarn build
+        env:
+          NEXT_PUBLIC_WC_PROJECT_ID: ${{ secrets.WC_PROJECT_ID }}
 
       - name: Upload artifact 📡
         uses: actions/upload-pages-artifact@v3
