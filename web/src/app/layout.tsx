@@ -8,7 +8,7 @@ import { Providers } from "./providers";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Deploy Executor",
+  title: "Executooor UI",
 };
 
 export default function RootLayout(props: { children: ReactNode }) {

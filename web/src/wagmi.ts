@@ -1,16 +1,18 @@
-import { http, createConfig } from "wagmi";
-import { mainnet, sepolia, base } from "wagmi/chains";
+import { defaultWagmiConfig } from "@web3modal/wagmi";
+import { mainnet, sepolia } from "wagmi/chains";
 import { coinbaseWallet, injected } from "wagmi/connectors";
 
-export const config = createConfig({
-  chains: [mainnet, sepolia],
-  connectors: [injected(), coinbaseWallet({ appName: "Deploy Executor" })],
-  ssr: true,
-  transports: {
-    [mainnet.id]: http(),
-    [sepolia.id]: http(),
-    [base.id]: http(),
+export const config = defaultWagmiConfig({
+  projectId: process.env.NEXT_PUBLIC_WC_PROJECT_ID!,
+  metadata: {
+    name: "executooor",
+    description: "Executooor UI",
+    url: "https://rubilmax.github.io",
+    icons: [],
   },
+  chains: [mainnet, sepolia],
+  connectors: [injected(), coinbaseWallet({ appName: "Executooor UI" })],
+  ssr: true,
 });
 
 declare module "wagmi" {

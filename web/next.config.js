@@ -1,6 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  basePath: "/executooor",
+  basePath: process.env.NODE_ENV === "production" ? "/executooor" : "",
   output: "export",
   reactStrictMode: true,
 };
