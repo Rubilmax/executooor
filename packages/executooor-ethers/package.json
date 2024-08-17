@@ -39,18 +39,15 @@
     "evm-maths": "^6.0.3"
   },
   "devDependencies": {
-    "@nomicfoundation/ethereumjs-util": "^9.0.4",
     "@nomicfoundation/hardhat-chai-matchers": "^2.0.6",
     "@nomicfoundation/hardhat-ethers": "^3.0.6",
     "@nomicfoundation/hardhat-network-helpers": "^1.0.10",
     "@typechain/ethers-v6": "^0.5.1",
     "@typechain/hardhat": "^9.1.0",
     "@types/chai": "^4.3.16",
-    "@types/fs-extra": "^11",
     "@types/mocha": "^10.0.6",
     "chai": "^4.4.1",
     "dotenv": "^16.4.5",
-    "fs-extra": "^11.2.0",
     "hardhat": "^2.22.5",
     "hardhat-deal": "^3.0.2",
     "hardhat-gas-reporter": "^2.2.1",
