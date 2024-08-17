@@ -1,6 +1,9 @@
 name: Hardhat Test Suite
 
 on:
+  push:
+    branches:
+      - main
   pull_request:
   workflow_call:
     secrets:

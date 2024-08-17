@@ -10,7 +10,8 @@
   "private": true,
   "packageManager": "yarn@4.4.0",
   "workspaces": [
-    "packages/*"
+    "packages/*",
+    "web"
   ],
   "scripts": {
     "prepare": "husky",

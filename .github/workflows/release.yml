@@ -1,12 +1,7 @@
 name: Release
 
 on:
-  workflow_call:
-    secrets:
-      NPM_TOKEN:
-        required: true
-      MAINNET_RPC_URL:
-        required: true
+  workflow_dispatch:
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
