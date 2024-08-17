@@ -11,22 +11,22 @@ import {
   toUtf8Bytes,
 } from "ethers";
 import {
-  CErc20__factory,
   AaveV2LendingPool__factory,
   AaveV3Pool__factory,
-  WETH__factory,
-  MorphoBlue__factory,
-  MorphoAaveV3__factory,
+  BalancerVault__factory,
+  CErc20__factory,
+  ERC20Wrapper__factory,
+  ERC20__factory,
+  ERC4626__factory,
+  IERC3156FlashLender__factory,
   MorphoAaveV2__factory,
+  MorphoAaveV3__factory,
+  MorphoBlue__factory,
   MorphoCompound__factory,
   UniswapV2Router__factory,
-  UniswapV3Router__factory,
   UniswapV3Pool__factory,
-  IERC3156FlashLender__factory,
-  ERC20__factory,
-  BalancerVault__factory,
-  ERC4626__factory,
-  ERC20Wrapper__factory,
+  UniswapV3Router__factory,
+  WETH__factory,
 } from "ethers-types";
 import { PayableOverrides } from "ethers-types/dist/common";
 import { MarketParamsStruct } from "ethers-types/dist/protocols/morpho/blue/MorphoBlue";

@@ -7,15 +7,15 @@
     "url": "https://github.com/rubilmax"
   },
   "license": "MIT",
-  "main": "lib/index.js",
-  "files": [
-    "lib/*"
+  "private": true,
+  "packageManager": "yarn@4.4.0",
+  "workspaces": [
+    "packages/*"
   ],
   "scripts": {
     "prepare": "husky",
-    "typecheck": "tsc --noEmit",
-    "build": "hardhat compile --force && tsc --build ./tsconfig.build.json",
-    "test": "hardhat test"
+    "lint": "biome check",
+    "publish": "lerna publish from-git"
   },
   "repository": {
     "type": "git",
@@ -27,113 +27,32 @@
   "keywords": [
     "mev",
     "ethers",
+    "viem",
     "executor",
     "multicall",
     "multidelegatecall",
     "evm",
     "smart contract"
   ],
-  "dependencies": {
-    "ethers": "^6.12.1",
-    "ethers-types": "^3.15.0",
-    "evm-maths": "^6.0.3"
-  },
   "devDependencies": {
+    "@biomejs/biome": "^1.8.3",
     "@commitlint/cli": "^17.8.0",
     "@commitlint/config-conventional": "^17.8.0",
-    "@nomicfoundation/hardhat-chai-matchers": "^2.0.6",
-    "@nomicfoundation/hardhat-ethers": "^3.0.6",
-    "@nomicfoundation/hardhat-network-helpers": "^1.0.10",
-    "@trivago/prettier-plugin-sort-imports": "^4.3.0",
-    "@typechain/ethers-v6": "^0.5.1",
-    "@typechain/hardhat": "^9.1.0",
-    "@types/chai": "^4.3.16",
-    "@types/mocha": "^10.0.6",
-    "chai": "^4.4.1",
-    "commitizen": "^4.3.0",
-    "conventional-changelog-conventionalcommits": "^8.0.0",
-    "cz-conventional-changelog": "^3.3.0",
-    "dotenv": "^16.4.5",
-    "hardhat": "^2.22.4",
-    "hardhat-deal": "^3.0.2",
-    "hardhat-tracer": "^3.0.0",
-    "hardhat-gas-reporter": "^1.0.10",
+    "@lerna-lite/cli": "3.5.1",
+    "@lerna-lite/publish": "3.8.0",
+    "@lerna-lite/version": "^3.7.1",
     "husky": "^9.0.11",
     "lint-staged": "^15.2.2",
-    "prettier": "^3.2.5",
-    "solidity-coverage": "^0.8.11",
     "ts-node": "^10.9.2",
-    "typechain": "^8.3.2",
     "typescript": "^5.4.5"
   },
   "lint-staged": {
     "*.sol": "forge fmt",
-    "*.ts": "prettier"
-  },
-  "config": {
-    "commitizen": {
-      "path": "./node_modules/cz-conventional-changelog"
-    }
+    "*.ts": "yarn biome check"
   },
   "commitlint": {
     "extends": [
       "@commitlint/config-conventional"
-    ]
-  },
-  "release": {
-    "branches": [
-      "main"
-    ],
-    "plugins": [
-      [
-        "@semantic-release/commit-analyzer",
-        {
-          "preset": "conventionalcommits",
-          "releaseRules": [
-            {
-              "type": "build",
-              "scope": "deps",
-              "release": "patch"
-            }
-          ]
-        }
-      ],
-      [
-        "@semantic-release/release-notes-generator",
-        {
-          "preset": "conventionalcommits",
-          "presetConfig": {
-            "types": [
-              {
-                "type": "feat",
-                "section": "Features"
-              },
-              {
-                "type": "fix",
-                "section": "Bug Fixes"
-              },
-              {
-                "type": "build",
-                "section": "Dependencies and Other Build Updates",
-                "hidden": false
-              }
-            ]
-          }
-        }
-      ],
-      "@semantic-release/npm",
-      "@semantic-release/github"
-    ]
-  },
-  "prettier": {
-    "printWidth": 120,
-    "importOrder": [
-      "^ethers",
-      "^\\."
-    ],
-    "importOrderSeparation": true,
-    "plugins": [
-      "@trivago/prettier-plugin-sort-imports"
     ]
   }
 }

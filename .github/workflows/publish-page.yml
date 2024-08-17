@@ -33,7 +33,7 @@ jobs:
           cache: yarn
 
       - name: Install dependencies
-        run: yarn --frozen-lockfile
+        run: yarn --immutable
 
       - name: Configure pages
         uses: actions/configure-pages@v5

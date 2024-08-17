@@ -2,43 +2,36 @@ name: Hardhat Test Suite
 
 on:
   pull_request:
-    paths:
-      - contracts/**
-      - src/**
-      - test/**
-      - package.json
-      - yarn.lock
   workflow_call:
     secrets:
       MAINNET_RPC_URL:
         required: true
 
 jobs:
-  jest:
+  hardhat:
     runs-on: ubuntu-latest
 
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+    strategy:
+      matrix:
+        package: [executooor-ethers]
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
         with:
           node-version: 20
           cache: yarn
 
-      - name: Install dependencies
-        run: yarn --frozen-lockfile
+      - run: yarn --immutable
 
-      - name: Save hardhat cache
-        uses: actions/cache@v4
+      - uses: actions/cache@v4
         with:
           path: |
-            cache
-            artifacts
-          key: ${{ github.base_ref || github.ref_name }}-hardhat
+            packages/${{ matrix.package }}/cache/
+            packages/${{ matrix.package }}/artifacts/
+          key: ${{ github.base_ref || github.ref_name }}-${{ matrix.package }}-hardhat
 
-      - name: Run hardhat tests
-        run: yarn test
+      - run: yarn workspace ${{ matrix.package }} test
         env:
           MAINNET_RPC_URL: ${{ secrets.MAINNET_RPC_URL }}
