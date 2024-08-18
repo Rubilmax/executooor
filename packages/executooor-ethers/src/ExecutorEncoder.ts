@@ -94,6 +94,7 @@ export class ExecutorEncoder {
     );
   }
 
+  protected totalValue = 0n;
   protected calls: string[] = [];
 
   public readonly executor: Executor;
@@ -113,7 +114,8 @@ export class ExecutorEncoder {
     return runner;
   }
 
-  pushCall(target: string, value: BigNumberish, callData: BytesLike, context?: CallbackContext) {
+  pushCall(target: string, value: bigint, callData: BytesLike, context?: CallbackContext) {
+    this.totalValue += value;
     this.calls.push(ExecutorEncoder.buildCall(target, value, callData, context));
 
     return this;
@@ -122,17 +124,30 @@ export class ExecutorEncoder {
   flush() {
     const calls = [...this.calls];
 
+    this.totalValue = 0n;
     this.calls = [];
 
     return calls;
   }
 
   async exec(overrides: PayableOverrides & { from?: PromiseOrValue<string> } = {}) {
-    return await this.executor.exec_606BaXt(this.flush(), overrides);
+    const { totalValue } = this;
+    const { value } = overrides;
+
+    return await this.executor.exec_606BaXt(this.flush(), {
+      ...overrides,
+      value: totalValue + toBigInt(value ?? 0n),
+    });
   }
 
   async populateExec(overrides: PayableOverrides & { from?: PromiseOrValue<string> } = {}) {
-    return await this.executor.exec_606BaXt.populateTransaction(this.flush(), overrides);
+    const { totalValue } = this;
+    const { value } = overrides;
+
+    return await this.executor.exec_606BaXt.populateTransaction(this.flush(), {
+      ...overrides,
+      value: totalValue + toBigInt(value ?? 0n),
+    });
   }
 
   /* BASE */
@@ -142,7 +157,7 @@ export class ExecutorEncoder {
 
     return this.pushCall(
       this.address,
-      0,
+      0n,
       ExecutorEncoder.EXECUTOR_IFC.encodeFunctionData("transfer", [recipient, amount]),
     );
   }
@@ -150,7 +165,7 @@ export class ExecutorEncoder {
   tip(amount: BigNumberish) {
     return this.pushCall(
       this.address,
-      0,
+      0n,
       ExecutorEncoder.EXECUTOR_IFC.encodeFunctionData("transfer", [ZeroAddress, amount]),
     );
   }
@@ -162,7 +177,7 @@ export class ExecutorEncoder {
 
     return this.pushCall(
       balancerVaultAddress,
-      0,
+      0n,
       ExecutorEncoder.BALANCER_VAULT_IFC.encodeFunctionData("flashLoan", [
         this.address,
         requests.map(({ asset }) => asset),
@@ -191,7 +206,7 @@ export class ExecutorEncoder {
 
     return this.pushCall(
       makerVaultAddress,
-      0,
+      0n,
       ExecutorEncoder.ERC3156_LENDER_IFC.encodeFunctionData("flashLoan", [
         this.address,
         asset,
@@ -221,7 +236,7 @@ export class ExecutorEncoder {
 
     return this.pushCall(
       aaveV2PoolAddress,
-      0,
+      0n,
       ExecutorEncoder.POOL_V2_IFC.encodeFunctionData("flashLoan", [
         this.address,
         requests.map(({ asset }) => asset),
@@ -266,7 +281,7 @@ export class ExecutorEncoder {
 
     return this.pushCall(
       aaveV3PoolAddress,
-      0,
+      0n,
       ExecutorEncoder.POOL_V3_IFC.encodeFunctionData("flashLoan", [
         this.address,
         requests.map(({ asset }) => asset),
@@ -316,7 +331,7 @@ export class ExecutorEncoder {
 
     return this.pushCall(
       pool,
-      0,
+      0n,
       ExecutorEncoder.UNI_V3_POOL_IFC.encodeFunctionData("flash", [
         this.address,
         amount0,
@@ -356,7 +371,7 @@ export class ExecutorEncoder {
 
     return this.pushCall(
       pool,
-      0,
+      0n,
       ExecutorEncoder.UNI_V3_POOL_IFC.encodeFunctionData("flash", [
         this.address,
         amount0,
@@ -384,7 +399,7 @@ export class ExecutorEncoder {
 
     return this.pushCall(
       morphoBlueAddress,
-      0,
+      0n,
       ExecutorEncoder.MORPHO_BLUE_IFC.encodeFunctionData("flashLoan", [
         asset,
         amount,
@@ -403,17 +418,17 @@ export class ExecutorEncoder {
   /* ERC20 */
 
   erc20Approve(asset: string, spender: string, allowance: BigNumberish) {
-    return this.pushCall(asset, 0, ExecutorEncoder.ERC20_IFC.encodeFunctionData("approve", [spender, allowance]));
+    return this.pushCall(asset, 0n, ExecutorEncoder.ERC20_IFC.encodeFunctionData("approve", [spender, allowance]));
   }
 
   erc20Transfer(asset: string, recipient: string, amount: BigNumberish) {
-    return this.pushCall(asset, 0, ExecutorEncoder.ERC20_IFC.encodeFunctionData("transfer", [recipient, amount]));
+    return this.pushCall(asset, 0n, ExecutorEncoder.ERC20_IFC.encodeFunctionData("transfer", [recipient, amount]));
   }
 
   erc20TransferFrom(asset: string, owner: string, recipient: string, amount: BigNumberish) {
     return this.pushCall(
       asset,
-      0,
+      0n,
       ExecutorEncoder.ERC20_IFC.encodeFunctionData("transferFrom", [owner, recipient, amount]),
     );
   }
@@ -421,11 +436,11 @@ export class ExecutorEncoder {
   /* WETH */
 
   wrapETH(weth: string, amount: BigNumberish) {
-    return this.pushCall(weth, amount, ExecutorEncoder.WETH_IFC.encodeFunctionData("deposit"));
+    return this.pushCall(weth, toBigInt(amount), ExecutorEncoder.WETH_IFC.encodeFunctionData("deposit"));
   }
 
   unwrapETH(weth: string, amount: BigNumberish) {
-    return this.pushCall(weth, 0, ExecutorEncoder.WETH_IFC.encodeFunctionData("withdraw", [amount]));
+    return this.pushCall(weth, 0n, ExecutorEncoder.WETH_IFC.encodeFunctionData("withdraw", [amount]));
   }
 
   /* ERC20 Wrappers */
@@ -433,7 +448,7 @@ export class ExecutorEncoder {
   erc20WrapperDepositFor(asset: string, onBehalf: string, amount: BigNumberish) {
     return this.pushCall(
       asset,
-      0,
+      0n,
       ExecutorEncoder.ERC20_WRAPPER_IFC.encodeFunctionData("depositFor", [onBehalf, amount]),
     );
   }
@@ -441,7 +456,7 @@ export class ExecutorEncoder {
   erc20WrapperWithdrawTo(asset: string, receiver: string, amount: BigNumberish) {
     return this.pushCall(
       asset,
-      0,
+      0n,
       ExecutorEncoder.ERC20_WRAPPER_IFC.encodeFunctionData("withdrawTo", [receiver, amount]),
     );
   }
@@ -449,48 +464,52 @@ export class ExecutorEncoder {
   /* ERC4626 */
 
   erc4626Deposit(vault: string, assets: BigNumberish, owner: string) {
-    return this.pushCall(vault, 0, ExecutorEncoder.ERC4626_IFC.encodeFunctionData("deposit", [assets, owner]));
+    return this.pushCall(vault, 0n, ExecutorEncoder.ERC4626_IFC.encodeFunctionData("deposit", [assets, owner]));
   }
 
   erc4626Mint(vault: string, shares: BigNumberish, owner: string) {
-    return this.pushCall(vault, 0, ExecutorEncoder.ERC4626_IFC.encodeFunctionData("mint", [shares, owner]));
+    return this.pushCall(vault, 0n, ExecutorEncoder.ERC4626_IFC.encodeFunctionData("mint", [shares, owner]));
   }
 
   erc4626Withdraw(vault: string, assets: BigNumberish, receiver: string, owner: string) {
     return this.pushCall(
       vault,
-      0,
+      0n,
       ExecutorEncoder.ERC4626_IFC.encodeFunctionData("withdraw", [assets, receiver, owner]),
     );
   }
 
   erc4626Redeem(vault: string, shares: BigNumberish, receiver: string, owner: string) {
-    return this.pushCall(vault, 0, ExecutorEncoder.ERC4626_IFC.encodeFunctionData("redeem", [shares, receiver, owner]));
+    return this.pushCall(
+      vault,
+      0n,
+      ExecutorEncoder.ERC4626_IFC.encodeFunctionData("redeem", [shares, receiver, owner]),
+    );
   }
 
   /* COMPOUND */
 
   compoundSupply(cToken: string, amount: BigNumberish) {
-    return this.pushCall(cToken, 0, ExecutorEncoder.C_TOKEN_IFC.encodeFunctionData("mint", [amount]));
+    return this.pushCall(cToken, 0n, ExecutorEncoder.C_TOKEN_IFC.encodeFunctionData("mint", [amount]));
   }
 
   compoundBorrow(cToken: string, amount: BigNumberish) {
-    return this.pushCall(cToken, 0, ExecutorEncoder.C_TOKEN_IFC.encodeFunctionData("borrow", [amount]));
+    return this.pushCall(cToken, 0n, ExecutorEncoder.C_TOKEN_IFC.encodeFunctionData("borrow", [amount]));
   }
 
   compoundRepay(cToken: string, amount: BigNumberish, onBehalfOf?: string) {
     if (onBehalfOf)
       return this.pushCall(
         cToken,
-        0,
+        0n,
         ExecutorEncoder.C_TOKEN_IFC.encodeFunctionData("repayBorrowBehalf", [onBehalfOf, amount]),
       );
 
-    return this.pushCall(cToken, 0, ExecutorEncoder.C_TOKEN_IFC.encodeFunctionData("repayBorrow", [amount]));
+    return this.pushCall(cToken, 0n, ExecutorEncoder.C_TOKEN_IFC.encodeFunctionData("repayBorrow", [amount]));
   }
 
   compoundWithdraw(cToken: string, amount: BigNumberish) {
-    return this.pushCall(cToken, 0, ExecutorEncoder.C_TOKEN_IFC.encodeFunctionData("redeemUnderlying", [amount]));
+    return this.pushCall(cToken, 0n, ExecutorEncoder.C_TOKEN_IFC.encodeFunctionData("redeemUnderlying", [amount]));
   }
 
   /* AAVE V2 */
@@ -500,7 +519,7 @@ export class ExecutorEncoder {
 
     return this.pushCall(
       aaveV2PoolAddress,
-      0,
+      0n,
       ExecutorEncoder.POOL_V2_IFC.encodeFunctionData("deposit", [asset, amount, onBehalfOf!, 0]),
     );
   }
@@ -516,7 +535,7 @@ export class ExecutorEncoder {
 
     return this.pushCall(
       aaveV2PoolAddress,
-      0,
+      0n,
       ExecutorEncoder.POOL_V2_IFC.encodeFunctionData("borrow", [asset, amount, interestRateMode, 0, onBehalfOf!]),
     );
   }
@@ -532,7 +551,7 @@ export class ExecutorEncoder {
 
     return this.pushCall(
       aaveV2PoolAddress,
-      0,
+      0n,
       ExecutorEncoder.POOL_V2_IFC.encodeFunctionData("repay", [asset, amount, interestRateMode, onBehalfOf!]),
     );
   }
@@ -542,7 +561,7 @@ export class ExecutorEncoder {
 
     return this.pushCall(
       aaveV2PoolAddress,
-      0,
+      0n,
       ExecutorEncoder.POOL_V2_IFC.encodeFunctionData("withdraw", [asset, amount, to!]),
     );
   }
@@ -554,7 +573,7 @@ export class ExecutorEncoder {
 
     return this.pushCall(
       aaveV2AmmPoolAddress,
-      0,
+      0n,
       ExecutorEncoder.POOL_V2_IFC.encodeFunctionData("deposit", [asset, amount, onBehalfOf!, 0]),
     );
   }
@@ -570,7 +589,7 @@ export class ExecutorEncoder {
 
     return this.pushCall(
       aaveV2AmmPoolAddress,
-      0,
+      0n,
       ExecutorEncoder.POOL_V2_IFC.encodeFunctionData("borrow", [asset, amount, interestRateMode, 0, onBehalfOf!]),
     );
   }
@@ -586,7 +605,7 @@ export class ExecutorEncoder {
 
     return this.pushCall(
       aaveV2AmmPoolAddress,
-      0,
+      0n,
       ExecutorEncoder.POOL_V2_IFC.encodeFunctionData("repay", [asset, amount, interestRateMode, onBehalfOf!]),
     );
   }
@@ -596,7 +615,7 @@ export class ExecutorEncoder {
 
     return this.pushCall(
       aaveV2AmmPoolAddress,
-      0,
+      0n,
       ExecutorEncoder.POOL_V2_IFC.encodeFunctionData("withdraw", [asset, amount, to!]),
     );
   }
@@ -610,7 +629,7 @@ export class ExecutorEncoder {
   ) {
     return this.pushCall(
       aaveV2AmmPoolAddress,
-      0,
+      0n,
       ExecutorEncoder.POOL_V2_IFC.encodeFunctionData("liquidationCall", [collateral, debt, user, amount, false]),
     );
   }
@@ -622,7 +641,7 @@ export class ExecutorEncoder {
 
     return this.pushCall(
       aaveV3PoolAddress,
-      0,
+      0n,
       ExecutorEncoder.POOL_V3_IFC.encodeFunctionData("deposit", [asset, amount, onBehalfOf!, 0]),
     );
   }
@@ -638,7 +657,7 @@ export class ExecutorEncoder {
 
     return this.pushCall(
       aaveV3PoolAddress,
-      0,
+      0n,
       ExecutorEncoder.POOL_V3_IFC.encodeFunctionData("borrow", [asset, amount, interestRateMode, 0, onBehalfOf!]),
     );
   }
@@ -654,7 +673,7 @@ export class ExecutorEncoder {
 
     return this.pushCall(
       aaveV3PoolAddress,
-      0,
+      0n,
       ExecutorEncoder.POOL_V3_IFC.encodeFunctionData("repay", [asset, amount, interestRateMode, onBehalfOf!]),
     );
   }
@@ -664,7 +683,7 @@ export class ExecutorEncoder {
 
     return this.pushCall(
       aaveV3PoolAddress,
-      0,
+      0n,
       ExecutorEncoder.POOL_V3_IFC.encodeFunctionData("withdraw", [asset, amount, to!]),
     );
   }
@@ -682,7 +701,7 @@ export class ExecutorEncoder {
 
     return this.pushCall(
       uniV3RouterAddress,
-      0,
+      0n,
       ExecutorEncoder.SWAP_ROUTER_V3_IFC.encodeFunctionData("exactInput", [
         {
           path,
@@ -706,7 +725,7 @@ export class ExecutorEncoder {
 
     return this.pushCall(
       uniV3RouterAddress,
-      0,
+      0n,
       ExecutorEncoder.SWAP_ROUTER_V3_IFC.encodeFunctionData("exactOutput", [
         {
           path,
@@ -730,7 +749,7 @@ export class ExecutorEncoder {
   ) {
     return this.pushCall(
       morphoCompoundAddress,
-      0,
+      0n,
       ExecutorEncoder.MORPHO_COMPOUND_IFC.encodeFunctionData("liquidate", [
         borrowedPoolToken,
         collateralPoolToken,
@@ -749,7 +768,7 @@ export class ExecutorEncoder {
   ) {
     return this.pushCall(
       morphoAaveV2Address,
-      0,
+      0n,
       ExecutorEncoder.MORPHO_AAVE_V2_IFC.encodeFunctionData("liquidate", [
         borrowedPoolToken,
         collateralPoolToken,
@@ -768,7 +787,7 @@ export class ExecutorEncoder {
   ) {
     return this.pushCall(
       morphoAaveV3Address,
-      0,
+      0n,
       ExecutorEncoder.MORPHO_AAVE_V3_IFC.encodeFunctionData("liquidate", [
         underlyingBorrowed,
         underlyingCollateral,
@@ -789,7 +808,7 @@ export class ExecutorEncoder {
 
     return this.pushCall(
       morphoBlueAddress,
-      0,
+      0n,
       ExecutorEncoder.MORPHO_BLUE_IFC.encodeFunctionData("supplyCollateral", [
         market,
         collateral,
@@ -812,7 +831,7 @@ export class ExecutorEncoder {
   ) {
     return this.pushCall(
       morphoBlueAddress,
-      0,
+      0n,
       ExecutorEncoder.MORPHO_BLUE_IFC.encodeFunctionData("withdrawCollateral", [
         market,
         collateral,
@@ -834,7 +853,7 @@ export class ExecutorEncoder {
 
     return this.pushCall(
       morphoBlueAddress,
-      0,
+      0n,
       ExecutorEncoder.MORPHO_BLUE_IFC.encodeFunctionData("supply", [
         market,
         assets,
@@ -859,7 +878,7 @@ export class ExecutorEncoder {
   ) {
     return this.pushCall(
       morphoBlueAddress,
-      0,
+      0n,
       ExecutorEncoder.MORPHO_BLUE_IFC.encodeFunctionData("withdraw", [market, assets, shares, onBehalf, receiver]),
     );
   }
@@ -876,7 +895,7 @@ export class ExecutorEncoder {
 
     return this.pushCall(
       morphoBlueAddress,
-      0,
+      0n,
       ExecutorEncoder.MORPHO_BLUE_IFC.encodeFunctionData("repay", [
         market,
         assets,
@@ -901,7 +920,7 @@ export class ExecutorEncoder {
   ) {
     return this.pushCall(
       morphoBlueAddress,
-      0,
+      0n,
       ExecutorEncoder.MORPHO_BLUE_IFC.encodeFunctionData("borrow", [market, assets, shares, onBehalf, receiver]),
     );
   }
@@ -918,7 +937,7 @@ export class ExecutorEncoder {
 
     return this.pushCall(
       morphoBlueAddress,
-      0,
+      0n,
       ExecutorEncoder.MORPHO_BLUE_IFC.encodeFunctionData("liquidate", [
         market,
         borrower,
