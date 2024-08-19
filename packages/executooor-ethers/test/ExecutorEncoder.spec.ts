@@ -193,6 +193,8 @@ describe("ExecutorEncoder", () => {
     const collateralAmount = BigInt.WAD * 1_000_000n;
     const borrowedAmount = BigInt.WAD * 200n;
 
+    await deal(dai, encoder.address, 1n); // Work around rounding errors.
+
     await encoder
       .balancerFlashLoan(
         balancerVaultAddress,
