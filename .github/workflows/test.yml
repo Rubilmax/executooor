@@ -16,7 +16,9 @@ jobs:
 
     strategy:
       matrix:
-        package: [executooor-ethers]
+        package:
+          - executooor-ethers
+          - executooor-viem
 
     steps:
       - uses: actions/checkout@v4

@@ -1,4 +1,3 @@
-import "@nomicfoundation/hardhat-chai-matchers";
 import "@nomicfoundation/hardhat-viem";
 import "evm-maths";
 import "hardhat-deal";
