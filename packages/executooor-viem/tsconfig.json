@@ -1,0 +1,9 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "outDir": "lib",
+    "baseUrl": "."
+  },
+  "include": ["src", "test"],
+  "files": ["hardhat.config.ts"]
+}

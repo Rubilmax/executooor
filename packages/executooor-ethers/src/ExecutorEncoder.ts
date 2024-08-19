@@ -226,16 +226,11 @@ export class ExecutorEncoder {
     );
   }
 
-  aaveV2FlashLoan(
-    aaveV2PoolAddress: string,
-    requests: AssetRequest[],
-    premium: BigNumberish,
-    callbackCalls?: BytesLike[],
-  ) {
+  aaveFlashLoan(aavePoolAddress: string, requests: AssetRequest[], premium: BigNumberish, callbackCalls?: BytesLike[]) {
     callbackCalls ??= [];
 
     return this.pushCall(
-      aaveV2PoolAddress,
+      aavePoolAddress,
       0n,
       ExecutorEncoder.POOL_V2_IFC.encodeFunctionData("flashLoan", [
         this.address,
@@ -252,7 +247,7 @@ export class ExecutorEncoder {
 
                 return ExecutorEncoder.buildErc20Approve(
                   asset,
-                  aaveV2PoolAddress,
+                  aavePoolAddress,
                   amount + amount.percentMul(toBigInt(premium)),
                 );
               }),
@@ -263,7 +258,7 @@ export class ExecutorEncoder {
         0,
       ]),
       {
-        sender: aaveV2PoolAddress,
+        sender: aavePoolAddress,
         dataIndex: 4n, // executeOperation(address[],uint256[],uint256[],address,bytes)
       },
     );
@@ -514,18 +509,18 @@ export class ExecutorEncoder {
 
   /* AAVE V2 */
 
-  aaveV2Supply(aaveV2PoolAddress: string, asset: string, amount: BigNumberish, onBehalfOf?: string) {
+  aaveSupply(aavePoolAddress: string, asset: string, amount: BigNumberish, onBehalfOf?: string) {
     onBehalfOf ||= this.address;
 
     return this.pushCall(
-      aaveV2PoolAddress,
+      aavePoolAddress,
       0n,
-      ExecutorEncoder.POOL_V2_IFC.encodeFunctionData("deposit", [asset, amount, onBehalfOf!, 0]),
+      ExecutorEncoder.POOL_V2_IFC.encodeFunctionData("deposit", [asset, amount, onBehalfOf, 0]),
     );
   }
 
-  aaveV2Borrow(
-    aaveV2PoolAddress: string,
+  aaveBorrow(
+    aavePoolAddress: string,
     asset: string,
     amount: BigNumberish,
     interestRateMode: BigNumberish,
@@ -534,14 +529,14 @@ export class ExecutorEncoder {
     onBehalfOf ||= this.address;
 
     return this.pushCall(
-      aaveV2PoolAddress,
+      aavePoolAddress,
       0n,
-      ExecutorEncoder.POOL_V2_IFC.encodeFunctionData("borrow", [asset, amount, interestRateMode, 0, onBehalfOf!]),
+      ExecutorEncoder.POOL_V2_IFC.encodeFunctionData("borrow", [asset, amount, interestRateMode, 0, onBehalfOf]),
     );
   }
 
-  aaveV2Repay(
-    aaveV2PoolAddress: string,
+  aaveRepay(
+    aavePoolAddress: string,
     asset: string,
     amount: BigNumberish,
     interestRateMode: BigNumberish,
@@ -550,141 +545,27 @@ export class ExecutorEncoder {
     onBehalfOf ||= this.address;
 
     return this.pushCall(
-      aaveV2PoolAddress,
+      aavePoolAddress,
       0n,
-      ExecutorEncoder.POOL_V2_IFC.encodeFunctionData("repay", [asset, amount, interestRateMode, onBehalfOf!]),
+      ExecutorEncoder.POOL_V2_IFC.encodeFunctionData("repay", [asset, amount, interestRateMode, onBehalfOf]),
     );
   }
 
-  aaveV2Withdraw(aaveV2PoolAddress: string, asset: string, amount: BigNumberish, to?: string) {
+  aaveWithdraw(aavePoolAddress: string, asset: string, amount: BigNumberish, to?: string) {
     to ||= this.address;
 
     return this.pushCall(
-      aaveV2PoolAddress,
+      aavePoolAddress,
       0n,
-      ExecutorEncoder.POOL_V2_IFC.encodeFunctionData("withdraw", [asset, amount, to!]),
+      ExecutorEncoder.POOL_V2_IFC.encodeFunctionData("withdraw", [asset, amount, to]),
     );
   }
 
-  /* AAVE V2 AMM */
-
-  aaveV2AmmSupply(aaveV2AmmPoolAddress: string, asset: string, amount: BigNumberish, onBehalfOf?: string) {
-    onBehalfOf ||= this.address;
-
+  aaveLiquidate(aavePoolAddress: string, collateral: string, debt: string, user: string, amount: BigNumberish) {
     return this.pushCall(
-      aaveV2AmmPoolAddress,
-      0n,
-      ExecutorEncoder.POOL_V2_IFC.encodeFunctionData("deposit", [asset, amount, onBehalfOf!, 0]),
-    );
-  }
-
-  aaveV2AmmBorrow(
-    aaveV2AmmPoolAddress: string,
-    asset: string,
-    amount: BigNumberish,
-    interestRateMode: BigNumberish,
-    onBehalfOf?: string,
-  ) {
-    onBehalfOf ||= this.address;
-
-    return this.pushCall(
-      aaveV2AmmPoolAddress,
-      0n,
-      ExecutorEncoder.POOL_V2_IFC.encodeFunctionData("borrow", [asset, amount, interestRateMode, 0, onBehalfOf!]),
-    );
-  }
-
-  aaveV2AmmRepay(
-    aaveV2AmmPoolAddress: string,
-    asset: string,
-    amount: BigNumberish,
-    interestRateMode: BigNumberish,
-    onBehalfOf?: string,
-  ) {
-    onBehalfOf ||= this.address;
-
-    return this.pushCall(
-      aaveV2AmmPoolAddress,
-      0n,
-      ExecutorEncoder.POOL_V2_IFC.encodeFunctionData("repay", [asset, amount, interestRateMode, onBehalfOf!]),
-    );
-  }
-
-  aaveV2AmmWithdraw(aaveV2AmmPoolAddress: string, asset: string, amount: BigNumberish, to?: string) {
-    to ||= this.address;
-
-    return this.pushCall(
-      aaveV2AmmPoolAddress,
-      0n,
-      ExecutorEncoder.POOL_V2_IFC.encodeFunctionData("withdraw", [asset, amount, to!]),
-    );
-  }
-
-  aaveV2AmmLiquidate(
-    aaveV2AmmPoolAddress: string,
-    collateral: string,
-    debt: string,
-    user: string,
-    amount: BigNumberish,
-  ) {
-    return this.pushCall(
-      aaveV2AmmPoolAddress,
+      aavePoolAddress,
       0n,
       ExecutorEncoder.POOL_V2_IFC.encodeFunctionData("liquidationCall", [collateral, debt, user, amount, false]),
-    );
-  }
-
-  /* AAVE V3 */
-
-  aaveV3Supply(aaveV3PoolAddress: string, asset: string, amount: BigNumberish, onBehalfOf?: string) {
-    onBehalfOf ||= this.address;
-
-    return this.pushCall(
-      aaveV3PoolAddress,
-      0n,
-      ExecutorEncoder.POOL_V3_IFC.encodeFunctionData("deposit", [asset, amount, onBehalfOf!, 0]),
-    );
-  }
-
-  aaveV3Borrow(
-    aaveV3PoolAddress: string,
-    asset: string,
-    amount: BigNumberish,
-    interestRateMode: BigNumberish,
-    onBehalfOf?: string,
-  ) {
-    onBehalfOf ||= this.address;
-
-    return this.pushCall(
-      aaveV3PoolAddress,
-      0n,
-      ExecutorEncoder.POOL_V3_IFC.encodeFunctionData("borrow", [asset, amount, interestRateMode, 0, onBehalfOf!]),
-    );
-  }
-
-  aaveV3Repay(
-    aaveV3PoolAddress: string,
-    asset: string,
-    amount: BigNumberish,
-    interestRateMode: BigNumberish,
-    onBehalfOf?: string,
-  ) {
-    onBehalfOf ||= this.address;
-
-    return this.pushCall(
-      aaveV3PoolAddress,
-      0n,
-      ExecutorEncoder.POOL_V3_IFC.encodeFunctionData("repay", [asset, amount, interestRateMode, onBehalfOf!]),
-    );
-  }
-
-  aaveV3Withdraw(aaveV3PoolAddress: string, asset: string, amount: BigNumberish, to?: string) {
-    to ||= this.address;
-
-    return this.pushCall(
-      aaveV3PoolAddress,
-      0n,
-      ExecutorEncoder.POOL_V3_IFC.encodeFunctionData("withdraw", [asset, amount, to!]),
     );
   }
 
@@ -705,7 +586,7 @@ export class ExecutorEncoder {
       ExecutorEncoder.SWAP_ROUTER_V3_IFC.encodeFunctionData("exactInput", [
         {
           path,
-          recipient: recipient!,
+          recipient,
           deadline: Math.ceil(Date.now() / 1000) + 90,
           amountIn,
           amountOutMinimum,
@@ -729,7 +610,7 @@ export class ExecutorEncoder {
       ExecutorEncoder.SWAP_ROUTER_V3_IFC.encodeFunctionData("exactOutput", [
         {
           path,
-          recipient: recipient!,
+          recipient,
           deadline: Math.ceil(Date.now() / 1000) + 90,
           amountOut,
           amountInMaximum,
@@ -738,7 +619,7 @@ export class ExecutorEncoder {
     );
   }
 
-  /* LIQUIDATION */
+  /* MORPHO */
 
   morphoCompoundLiquidate(
     morphoCompoundAddress: string,

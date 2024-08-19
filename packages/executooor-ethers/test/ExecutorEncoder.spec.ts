@@ -108,7 +108,7 @@ describe("ExecutorEncoder", () => {
 
     for (const { asset, amount } of requests) await deal(asset, encoder.address, amount.percentMul(premium));
 
-    await encoder.aaveV2FlashLoan(aaveV2PoolAddress, requests, premium).exec();
+    await encoder.aaveFlashLoan(aaveV2PoolAddress, requests, premium).exec();
   });
 
   it("should execute aaveV3 flashloan", async () => {
@@ -171,8 +171,8 @@ describe("ExecutorEncoder", () => {
     await encoder
       .balancerFlashLoan(balancerVaultAddress, requests)
       .makerFlashLoan(makerVaultAddress, dai, BigInt.WAD * 1_000_000n)
-      .aaveV2FlashLoan(aaveV2PoolAddress, requests, aaveV2Premium)
-      .aaveV3FlashLoan(aaveV3PoolAddress, requests, aaveV3Premium)
+      .aaveFlashLoan(aaveV2PoolAddress, requests, aaveV2Premium)
+      .aaveFlashLoan(aaveV3PoolAddress, requests, aaveV3Premium)
       .uniV3FlashLoan(computeV3PoolAddress(usdc, weth, 500n), assets, amounts, 500n)
       .exec();
   });
@@ -199,13 +199,13 @@ describe("ExecutorEncoder", () => {
         [{ asset: dai, amount: collateralAmount }],
         encoder
           .erc20Approve(dai, aaveV2PoolAddress, collateralAmount)
-          .aaveV2Supply(aaveV2PoolAddress, dai, collateralAmount)
-          .aaveV2Borrow(aaveV2PoolAddress, weth, borrowedAmount, 2)
+          .aaveSupply(aaveV2PoolAddress, dai, collateralAmount)
+          .aaveBorrow(aaveV2PoolAddress, weth, borrowedAmount, 2)
           .unwrapETH(weth, borrowedAmount)
           .wrapETH(weth, borrowedAmount)
           .erc20Approve(weth, aaveV2PoolAddress, borrowedAmount)
-          .aaveV2Repay(aaveV2PoolAddress, weth, borrowedAmount, 2)
-          .aaveV2Withdraw(aaveV2PoolAddress, dai, MaxUint256)
+          .aaveRepay(aaveV2PoolAddress, weth, borrowedAmount, 2)
+          .aaveWithdraw(aaveV2PoolAddress, dai, MaxUint256)
           .flush(),
       )
       .exec();
