@@ -3512,7 +3512,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@wagmi/connectors@npm:5.1.5":
+"@wagmi/connectors@npm:5.1.5, @wagmi/connectors@npm:^5.1.5":
   version: 5.1.5
   resolution: "@wagmi/connectors@npm:5.1.5"
   dependencies:
@@ -3534,7 +3534,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@wagmi/core@npm:2.13.4":
+"@wagmi/core@npm:2.13.4, @wagmi/core@npm:^2.13.4":
   version: 2.13.4
   resolution: "@wagmi/core@npm:2.13.4"
   dependencies:
@@ -13069,6 +13069,8 @@ __metadata:
     "@types/react": "npm:^18.2.23"
     "@types/react-dom": "npm:^18.2.8"
     "@wagmi/cli": "npm:^2.1.8"
+    "@wagmi/connectors": "npm:^5.1.5"
+    "@wagmi/core": "npm:^2.13.4"
     "@web3modal/wagmi": "npm:^5.0.2"
     encoding: "npm:^0.1.13"
     lokijs: "npm:^1.5.12"

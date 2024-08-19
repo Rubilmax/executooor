@@ -10,6 +10,8 @@
   },
   "dependencies": {
     "@tanstack/react-query": "^5.40.0",
+    "@wagmi/connectors": "^5.1.5",
+    "@wagmi/core": "^2.13.4",
     "@web3modal/wagmi": "^5.0.2",
     "next": "^14.2.3",
     "react": "^18.2.0",
