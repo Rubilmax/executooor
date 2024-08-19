@@ -122,7 +122,7 @@ describe("ExecutorEncoder", () => {
 
     for (const { asset, amount } of requests) await deal(asset, encoder.address, amount.percentMul(premium));
 
-    await encoder.aaveV3FlashLoan(aaveV3PoolAddress, requests, premium).exec();
+    await encoder.aaveFlashLoan(aaveV3PoolAddress, requests, premium).exec();
   });
 
   it("should execute uniV3 flashloan", async () => {
@@ -283,8 +283,18 @@ describe("ExecutorEncoder", () => {
       .erc4626Redeem(sDai, assets / 8n, owner.address, encoder.address)
       .exec();
 
-    const daiBalance = await ERC20__factory.connect(dai, owner).balanceOf(owner.address);
+    const daiBalance = await ERC20__factory.connect(dai, owner).balanceOf(owner);
 
     expect(daiBalance / BigInt.WAD).to.equal(385n);
+  });
+
+  it("should skim DAI", async () => {
+    await deal(dai, encoder.address, 5n);
+
+    await encoder.erc20Skim(dai, owner.address).exec();
+
+    const daiBalance = await ERC20__factory.connect(dai, owner).balanceOf(owner);
+
+    expect(daiBalance).to.equal(5n);
   });
 });

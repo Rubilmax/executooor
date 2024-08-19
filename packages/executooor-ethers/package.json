@@ -14,7 +14,7 @@
   "scripts": {
     "prepare": "cp -r ../../contracts/ .",
     "typecheck": "tsc --noEmit",
-    "build": "hardhat compile --force && tsc --build ./tsconfig.build.json",
+    "build": "yarn prepare && hardhat compile --force && tsc --build ./tsconfig.build.json",
     "test": "yarn prepare && hardhat test"
   },
   "repository": {

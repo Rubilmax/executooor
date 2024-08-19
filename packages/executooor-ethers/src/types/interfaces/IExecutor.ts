@@ -21,11 +21,47 @@ import type {
   TypedContractMethod,
 } from "../common";
 
+export type PlaceholderStruct = {
+  to: AddressLike;
+  data: BytesLike;
+  offset: BigNumberish;
+  length: BigNumberish;
+  resOffset: BigNumberish;
+};
+
+export type PlaceholderStructOutput = [
+  to: string,
+  data: string,
+  offset: bigint,
+  length: bigint,
+  resOffset: bigint
+] & {
+  to: string;
+  data: string;
+  offset: bigint;
+  length: bigint;
+  resOffset: bigint;
+};
+
 export interface IExecutorInterface extends Interface {
   getFunction(
-    nameOrSignature: "call_g0oyU7o" | "exec_606BaXt" | "transfer"
+    nameOrSignature:
+      | "callWithPlaceholders4845164670"
+      | "call_g0oyU7o"
+      | "exec_606BaXt"
+      | "transfer"
   ): FunctionFragment;
 
+  encodeFunctionData(
+    functionFragment: "callWithPlaceholders4845164670",
+    values: [
+      AddressLike,
+      BigNumberish,
+      BytesLike,
+      BytesLike,
+      PlaceholderStruct[]
+    ]
+  ): string;
   encodeFunctionData(
     functionFragment: "call_g0oyU7o",
     values: [AddressLike, BigNumberish, BytesLike, BytesLike]
@@ -39,6 +75,10 @@ export interface IExecutorInterface extends Interface {
     values: [AddressLike, BigNumberish]
   ): string;
 
+  decodeFunctionResult(
+    functionFragment: "callWithPlaceholders4845164670",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(
     functionFragment: "call_g0oyU7o",
     data: BytesLike
@@ -93,6 +133,18 @@ export interface IExecutor extends BaseContract {
     event?: TCEvent
   ): Promise<this>;
 
+  callWithPlaceholders4845164670: TypedContractMethod<
+    [
+      target: AddressLike,
+      value: BigNumberish,
+      context: BytesLike,
+      callData: BytesLike,
+      placeholders: PlaceholderStruct[]
+    ],
+    [void],
+    "payable"
+  >;
+
   call_g0oyU7o: TypedContractMethod<
     [
       target: AddressLike,
@@ -116,6 +168,19 @@ export interface IExecutor extends BaseContract {
     key: string | FunctionFragment
   ): T;
 
+  getFunction(
+    nameOrSignature: "callWithPlaceholders4845164670"
+  ): TypedContractMethod<
+    [
+      target: AddressLike,
+      value: BigNumberish,
+      context: BytesLike,
+      callData: BytesLike,
+      placeholders: PlaceholderStruct[]
+    ],
+    [void],
+    "payable"
+  >;
   getFunction(
     nameOrSignature: "call_g0oyU7o"
   ): TypedContractMethod<

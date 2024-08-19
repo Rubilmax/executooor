@@ -32,6 +32,7 @@ import { PayableOverrides } from "ethers-types/dist/common";
 import { MarketParamsStruct } from "ethers-types/dist/protocols/morpho/blue/MorphoBlue";
 
 import { Executor, Executor__factory } from "./types";
+import { PlaceholderStruct } from "./types/Executor";
 
 export type PromiseOrValue<T> = T | Promise<T>;
 
@@ -69,13 +70,20 @@ export class ExecutorEncoder {
     value: BigNumberish,
     callData: BytesLike,
     context: CallbackContext = { sender: ZeroAddress, dataIndex: 0n },
+    placeholders: PlaceholderStruct[] = [],
   ) {
-    return ExecutorEncoder.EXECUTOR_IFC.encodeFunctionData("call_g0oyU7o", [
-      target,
-      value,
-      "0x" + context.dataIndex.toString(16).padStart(24, "0") + context.sender.substring(2),
-      callData,
-    ]);
+    const encodedContext = "0x" + context.dataIndex.toString(16).padStart(24, "0") + context.sender.substring(2);
+
+    if (placeholders.length > 0)
+      return ExecutorEncoder.EXECUTOR_IFC.encodeFunctionData("callWithPlaceholders4845164670", [
+        target,
+        value,
+        encodedContext,
+        callData,
+        placeholders,
+      ]);
+
+    return ExecutorEncoder.EXECUTOR_IFC.encodeFunctionData("call_g0oyU7o", [target, value, encodedContext, callData]);
   }
 
   static buildErc20Approve(asset: string, recipient: string, amount: BigNumberish) {
@@ -114,9 +122,15 @@ export class ExecutorEncoder {
     return runner;
   }
 
-  pushCall(target: string, value: bigint, callData: BytesLike, context?: CallbackContext) {
+  pushCall(
+    target: string,
+    value: bigint,
+    callData: BytesLike,
+    context?: CallbackContext,
+    placeholders?: PlaceholderStruct[],
+  ) {
     this.totalValue += value;
-    this.calls.push(ExecutorEncoder.buildCall(target, value, callData, context));
+    this.calls.push(ExecutorEncoder.buildCall(target, value, callData, context, placeholders));
 
     return this;
   }
@@ -264,51 +278,6 @@ export class ExecutorEncoder {
     );
   }
 
-  aaveV3FlashLoan(
-    aaveV3PoolAddress: string,
-    requests: AssetRequest[],
-    premium: BigNumberish,
-    callbackCalls?: BytesLike[],
-  ) {
-    callbackCalls ??= [];
-
-    premium = toBigInt(premium);
-
-    return this.pushCall(
-      aaveV3PoolAddress,
-      0n,
-      ExecutorEncoder.POOL_V3_IFC.encodeFunctionData("flashLoan", [
-        this.address,
-        requests.map(({ asset }) => asset),
-        requests.map(({ amount }) => amount),
-        requests.map(() => 0),
-        this.address,
-        AbiCoder.defaultAbiCoder().encode(
-          ["bytes[]", "bytes"],
-          [
-            callbackCalls.concat(
-              requests.map(({ asset, amount }) => {
-                amount = toBigInt(amount);
-
-                return ExecutorEncoder.buildErc20Approve(
-                  asset,
-                  aaveV3PoolAddress,
-                  amount + amount.percentMul(toBigInt(premium)),
-                );
-              }),
-            ),
-            "0x0000000000000000000000000000000000000000000000000000000000000001",
-          ],
-        ),
-        0,
-      ]),
-      {
-        sender: aaveV3PoolAddress,
-        dataIndex: 4n, // executeOperation(address[],uint256[],uint256[],address,bytes)
-      },
-    );
-  }
-
   uniV2FlashSwap(
     pool: string,
     [asset0, asset1]: readonly [string, string],
@@ -412,6 +381,16 @@ export class ExecutorEncoder {
 
   /* ERC20 */
 
+  erc20BalanceOf(asset: string, owner: string, offset: BigNumberish) {
+    return {
+      to: asset,
+      data: ExecutorEncoder.ERC20_IFC.encodeFunctionData("balanceOf", [owner]),
+      offset,
+      length: 32,
+      resOffset: 0,
+    };
+  }
+
   erc20Approve(asset: string, spender: string, allowance: BigNumberish) {
     return this.pushCall(asset, 0n, ExecutorEncoder.ERC20_IFC.encodeFunctionData("approve", [spender, allowance]));
   }
@@ -425,6 +404,16 @@ export class ExecutorEncoder {
       asset,
       0n,
       ExecutorEncoder.ERC20_IFC.encodeFunctionData("transferFrom", [owner, recipient, amount]),
+    );
+  }
+
+  erc20Skim(asset: string, recipient: string) {
+    return this.pushCall(
+      asset,
+      0n,
+      ExecutorEncoder.ERC20_IFC.encodeFunctionData("transfer", [recipient, 0n]),
+      undefined,
+      [this.erc20BalanceOf(asset, this.address, 4 + 32)],
     );
   }
 

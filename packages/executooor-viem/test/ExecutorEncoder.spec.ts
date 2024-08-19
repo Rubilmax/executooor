@@ -154,7 +154,7 @@ describe("ExecutorEncoder", () => {
 
     for (const { asset, amount } of requests) await deal(asset, encoder.address, amount.percentMul(premium));
 
-    await encoder.aaveV3FlashLoan(aaveV3PoolAddress, requests, premium).exec();
+    await encoder.aaveFlashLoan(aaveV3PoolAddress, requests, premium).exec();
   });
 
   it("should execute uniV3 flashloan", async () => {
@@ -370,5 +370,20 @@ describe("ExecutorEncoder", () => {
     });
 
     expect(daiBalance / BigInt.WAD).to.equal(385n);
+  });
+
+  it("should skim DAI", async () => {
+    await deal(dai, encoder.address, 5n);
+
+    await encoder.erc20Skim(dai, owner.account.address).exec();
+
+    const daiBalance = await client.readContract({
+      address: dai,
+      abi: erc20Abi,
+      functionName: "balanceOf",
+      args: [owner.account.address],
+    });
+
+    expect(daiBalance).to.equal(5n);
   });
 });

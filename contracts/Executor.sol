@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.25;
+pragma solidity 0.8.25;
 
-import {IExecutor} from "./interfaces/IExecutor.sol";
+import {IExecutor, Placeholder} from "./interfaces/IExecutor.sol";
 
 uint256 constant FALLBACK_CONTEXT_TLOC = 0;
 
@@ -28,7 +28,7 @@ contract Executor is IExecutor {
     /// - the address expected to call back. Set to address(0) to prevent any callback.
     /// - the expected callback data index.
     /// @param callData the calldata of the call.
-    function call_g0oyU7o(address target, uint256 value, bytes32 context, bytes memory callData) external payable {
+    function call_g0oyU7o(address target, uint256 value, bytes32 context, bytes memory callData) public payable {
         require(msg.sender == address(this));
 
         bytes32 prevContext = _tload(FALLBACK_CONTEXT_TLOC);
@@ -39,6 +39,38 @@ contract Executor is IExecutor {
         if (!success) _revert(returnData);
 
         _tstore(FALLBACK_CONTEXT_TLOC, prevContext);
+    }
+
+    /// @notice Executes a normal call, requiring its success.
+    /// @param target The target address to call.
+    /// @param value The value of the call.
+    /// @param context The 32-bytes concatenation of:
+    /// - the address expected to call back. Set to address(0) to prevent any callback.
+    /// - the expected callback data index.
+    /// @param callData the calldata of the call.
+    function callWithPlaceholders4845164670(
+        address target,
+        uint256 value,
+        bytes32 context,
+        bytes memory callData,
+        Placeholder[] calldata placeholders
+    ) external payable {
+        for (uint256 i; i < placeholders.length; ++i) {
+            Placeholder calldata placeholder = placeholders[i];
+
+            (bool success, bytes memory resData) = placeholder.to.staticcall(placeholder.data);
+            if (!success) _revert(resData);
+
+            uint64 offset = placeholder.offset;
+            uint64 length = placeholder.length;
+            uint64 resOffset = placeholder.resOffset;
+
+            assembly ("memory-safe") {
+                mcopy(add(callData, add(32, offset)), add(resData, add(32, resOffset)), length)
+            }
+        }
+
+        call_g0oyU7o(target, value, context, callData);
     }
 
     /// @notice Transfers ETH to the recipient.

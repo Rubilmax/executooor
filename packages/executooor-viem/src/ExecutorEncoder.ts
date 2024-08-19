@@ -29,6 +29,14 @@ export interface CallbackContext {
   dataIndex: bigint;
 }
 
+export interface Placeholder {
+  to: Address;
+  data: Hex;
+  offset: bigint;
+  length: bigint;
+  resOffset: bigint;
+}
+
 export interface MarketParams {
   collateralToken: Address;
   loanToken: Address;
@@ -43,16 +51,22 @@ export class ExecutorEncoder {
     value: bigint,
     callData: Hex,
     context: CallbackContext = { sender: zeroAddress, dataIndex: 0n },
+    placeholders: Placeholder[] = [],
   ) {
+    const encodedContext =
+      `0x${context.dataIndex.toString(16).padStart(24, "0") + context.sender.substring(2)}` as const;
+
+    if (placeholders.length)
+      return encodeFunctionData({
+        abi: executorAbi,
+        functionName: "callWithPlaceholders4845164670",
+        args: [target, value, encodedContext, callData, placeholders],
+      });
+
     return encodeFunctionData({
       abi: executorAbi,
       functionName: "call_g0oyU7o",
-      args: [
-        target,
-        value,
-        `0x${context.dataIndex.toString(16).padStart(24, "0") + context.sender.substring(2)}`,
-        callData,
-      ],
+      args: [target, value, encodedContext, callData],
     });
   }
 
@@ -80,9 +94,9 @@ export class ExecutorEncoder {
     public readonly client: Client<Transport, Chain | undefined, Account>,
   ) {}
 
-  pushCall(target: Address, value: bigint, callData: Hex, context?: CallbackContext) {
+  pushCall(target: Address, value: bigint, callData: Hex, context?: CallbackContext, placeholders?: Placeholder[]) {
     this.totalValue += value;
-    this.calls.push(ExecutorEncoder.buildCall(target, value, callData, context));
+    this.calls.push(ExecutorEncoder.buildCall(target, value, callData, context, placeholders));
 
     return this;
   }
@@ -286,62 +300,6 @@ export class ExecutorEncoder {
     );
   }
 
-  aaveV3FlashLoan(aaveV3PoolAddress: Address, requests: AssetRequest[], premium: bigint, callbackCalls?: Hex[]) {
-    callbackCalls ??= [];
-
-    return this.pushCall(
-      aaveV3PoolAddress,
-      0n,
-      encodeFunctionData({
-        abi: [
-          {
-            inputs: [
-              { name: "receiverAddress", type: "address" },
-              { name: "assets", type: "address[]" },
-              { name: "amounts", type: "uint256[]" },
-              { name: "interestRateModes", type: "uint256[]" },
-              { name: "onBehalfOf", type: "address" },
-              { name: "params", type: "bytes" },
-              { name: "referralCode", type: "uint16" },
-            ],
-            name: "flashLoan",
-            outputs: [],
-            stateMutability: "nonpayable",
-            type: "function",
-          },
-        ],
-        functionName: "flashLoan",
-        args: [
-          this.address,
-          requests.map(({ asset }) => asset),
-          requests.map(({ amount }) => amount),
-          requests.map(() => 0n),
-          this.address,
-          encodeAbiParameters(
-            [{ type: "bytes[]" }, { type: "bytes" }],
-            [
-              callbackCalls.concat(
-                requests.map(({ asset, amount }) => {
-                  return ExecutorEncoder.buildErc20Approve(
-                    asset,
-                    aaveV3PoolAddress,
-                    amount + amount.percentMul(premium),
-                  );
-                }),
-              ),
-              "0x0000000000000000000000000000000000000000000000000000000000000001",
-            ],
-          ),
-          0,
-        ],
-      }),
-      {
-        sender: aaveV3PoolAddress,
-        dataIndex: 4n, // executeOperation(address[],uint256[],uint256[],address,bytes)
-      },
-    );
-  }
-
   uniV2FlashSwap(
     pool: Address,
     [asset0, asset1]: readonly [Address, Address],
@@ -489,6 +447,16 @@ export class ExecutorEncoder {
 
   /* ERC20 */
 
+  erc20BalanceOf(asset: Address, owner: Address, offset: bigint) {
+    return {
+      to: asset,
+      data: encodeFunctionData({ abi: erc20Abi, functionName: "balanceOf", args: [owner] }),
+      offset,
+      length: 32n,
+      resOffset: 0n,
+    };
+  }
+
   erc20Approve(asset: Address, spender: Address, allowance: bigint) {
     return this.pushCall(
       asset,
@@ -510,6 +478,16 @@ export class ExecutorEncoder {
       asset,
       0n,
       encodeFunctionData({ abi: erc20Abi, functionName: "transferFrom", args: [owner, recipient, amount] }),
+    );
+  }
+
+  erc20Skim(asset: Address, recipient: Address) {
+    return this.pushCall(
+      asset,
+      0n,
+      encodeFunctionData({ abi: erc20Abi, functionName: "transfer", args: [recipient, 0n] }),
+      undefined,
+      [this.erc20BalanceOf(asset, this.address, 4n + 32n)],
     );
   }
 

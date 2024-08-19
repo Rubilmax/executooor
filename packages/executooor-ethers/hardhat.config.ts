@@ -7,4 +7,10 @@ import "hardhat-gas-reporter";
 import "hardhat-tracer";
 import "solidity-coverage";
 
-export { default } from "../../hardhat.config";
+import config from "../../hardhat.config";
+
+config.typechain = {
+  outDir: "src/types/",
+};
+
+export default config;
