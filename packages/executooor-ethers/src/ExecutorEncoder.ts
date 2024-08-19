@@ -395,6 +395,12 @@ export class ExecutorEncoder {
     return this.pushCall(asset, 0n, ExecutorEncoder.ERC20_IFC.encodeFunctionData("approve", [spender, allowance]));
   }
 
+  erc20ApproveAll(asset: string, spender: string) {
+    return this.pushCall(asset, 0n, ExecutorEncoder.ERC20_IFC.encodeFunctionData("approve", [spender, 0n]), undefined, [
+      this.erc20BalanceOf(asset, this.address, 4 + 32),
+    ]);
+  }
+
   erc20Transfer(asset: string, recipient: string, amount: BigNumberish) {
     return this.pushCall(asset, 0n, ExecutorEncoder.ERC20_IFC.encodeFunctionData("transfer", [recipient, amount]));
   }
@@ -437,6 +443,16 @@ export class ExecutorEncoder {
     );
   }
 
+  erc20WrapperDepositAllFor(asset: string, underlying: string, onBehalf: string) {
+    return this.pushCall(
+      asset,
+      0n,
+      ExecutorEncoder.ERC20_WRAPPER_IFC.encodeFunctionData("depositFor", [onBehalf, 0n]),
+      undefined,
+      [this.erc20BalanceOf(underlying, this.address, 4 + 32)],
+    );
+  }
+
   erc20WrapperWithdrawTo(asset: string, receiver: string, amount: BigNumberish) {
     return this.pushCall(
       asset,
@@ -445,10 +461,26 @@ export class ExecutorEncoder {
     );
   }
 
+  erc20WrapperWithdrawAllTo(asset: string, receiver: string) {
+    return this.pushCall(
+      asset,
+      0n,
+      ExecutorEncoder.ERC20_WRAPPER_IFC.encodeFunctionData("withdrawTo", [receiver, 0n]),
+      undefined,
+      [this.erc20BalanceOf(asset, this.address, 4 + 32)],
+    );
+  }
+
   /* ERC4626 */
 
   erc4626Deposit(vault: string, assets: BigNumberish, owner: string) {
     return this.pushCall(vault, 0n, ExecutorEncoder.ERC4626_IFC.encodeFunctionData("deposit", [assets, owner]));
+  }
+
+  erc4626DepositAll(vault: string, asset: string, owner: string) {
+    return this.pushCall(vault, 0n, ExecutorEncoder.ERC4626_IFC.encodeFunctionData("deposit", [0n, owner]), undefined, [
+      this.erc20BalanceOf(asset, this.address, 4),
+    ]);
   }
 
   erc4626Mint(vault: string, shares: BigNumberish, owner: string) {
@@ -468,6 +500,16 @@ export class ExecutorEncoder {
       vault,
       0n,
       ExecutorEncoder.ERC4626_IFC.encodeFunctionData("redeem", [shares, receiver, owner]),
+    );
+  }
+
+  erc4626RedeemAll(vault: string, receiver: string, owner: string) {
+    return this.pushCall(
+      vault,
+      0n,
+      ExecutorEncoder.ERC4626_IFC.encodeFunctionData("redeem", [0n, receiver, owner]),
+      undefined,
+      [this.erc20BalanceOf(vault, this.address, 4)],
     );
   }
 
@@ -581,6 +623,26 @@ export class ExecutorEncoder {
           amountOutMinimum,
         },
       ]),
+    );
+  }
+
+  uniV3ExactInputAll(uniV3RouterAddress: string, path: string, amountOutMinimum: BigNumberish, recipient?: string) {
+    recipient ||= this.address;
+
+    return this.pushCall(
+      uniV3RouterAddress,
+      0n,
+      ExecutorEncoder.SWAP_ROUTER_V3_IFC.encodeFunctionData("exactInput", [
+        {
+          path,
+          recipient,
+          deadline: Math.ceil(Date.now() / 1000) + 90,
+          amountIn: 0n,
+          amountOutMinimum,
+        },
+      ]),
+      undefined,
+      [this.erc20BalanceOf(path.substring(0, 42), this.address, 4 + 32 * 4)],
     );
   }
 

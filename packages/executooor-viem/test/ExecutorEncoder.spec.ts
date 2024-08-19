@@ -15,7 +15,7 @@ import {
   parseUnits,
 } from "viem";
 import { ExecutorEncoder } from "../src/ExecutorEncoder";
-import executorAbi from "../src/abi";
+import { executorAbi } from "../src/abis";
 import {
   aaveV2PoolAddress,
   aaveV3PoolAddress,
@@ -385,5 +385,28 @@ describe("ExecutorEncoder", () => {
     });
 
     expect(daiBalance).to.equal(5n);
+  });
+
+  it("should swap all USDC for DAI via UniswapV3", async () => {
+    const amount = 1000_000000n;
+
+    await deal(usdc, encoder.address, amount);
+
+    await encoder
+      .erc20ApproveAll(usdc, uniV3RouterAddress)
+      .uniV3ExactInputAll(
+        uniV3RouterAddress,
+        encodePacked(["address", "uint24", "address", "uint24", "address"], [usdc, 500, weth, 500, dai]),
+        0n,
+      )
+      .exec();
+
+    const daiBalance = await client.readContract({
+      address: dai,
+      abi: erc20Abi,
+      functionName: "balanceOf",
+      args: [encoder.address],
+    });
+    expect(daiBalance.toWadFloat()).to.be.greaterThan(998);
   });
 });

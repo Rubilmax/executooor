@@ -297,4 +297,22 @@ describe("ExecutorEncoder", () => {
 
     expect(daiBalance).to.equal(5n);
   });
+
+  it("should swap all USDC for DAI via UniswapV3", async () => {
+    const amount = 1000_000000n;
+
+    await deal(usdc, encoder.address, amount);
+
+    await encoder
+      .erc20ApproveAll(usdc, uniV3RouterAddress)
+      .uniV3ExactInputAll(
+        uniV3RouterAddress,
+        solidityPacked(["address", "uint24", "address", "uint24", "address"], [usdc, 500n, weth, 500n, dai]),
+        0,
+      )
+      .exec();
+
+    const daiBalance = await ERC20__factory.connect(dai, owner).balanceOf(encoder.executor);
+    expect(daiBalance.toWadFloat()).to.be.greaterThan(998);
+  });
 });

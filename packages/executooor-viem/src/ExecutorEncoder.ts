@@ -11,11 +11,12 @@ import {
   erc20Abi,
   erc4626Abi,
   keccak256,
+  sliceHex,
   stringToBytes,
   zeroAddress,
 } from "viem";
 import { writeContract } from "viem/actions";
-import executorAbi from "./abi";
+import { erc20WrapperAbi, executorAbi } from "./abis";
 
 export type PromiseOrValue<T> = T | Promise<T>;
 
@@ -465,6 +466,16 @@ export class ExecutorEncoder {
     );
   }
 
+  erc20ApproveAll(asset: Address, spender: Address) {
+    return this.pushCall(
+      asset,
+      0n,
+      encodeFunctionData({ abi: erc20Abi, functionName: "approve", args: [spender, 0n] }),
+      undefined,
+      [this.erc20BalanceOf(asset, this.address, 4n + 32n)],
+    );
+  }
+
   erc20Transfer(asset: Address, recipient: Address, amount: bigint) {
     return this.pushCall(
       asset,
@@ -539,21 +550,24 @@ export class ExecutorEncoder {
       asset,
       0n,
       encodeFunctionData({
-        abi: [
-          {
-            inputs: [
-              { name: "owner", type: "address" },
-              { name: "amount", type: "uint256" },
-            ],
-            name: "depositFor",
-            outputs: [],
-            stateMutability: "nonpayable",
-            type: "function",
-          },
-        ],
+        abi: erc20WrapperAbi,
         functionName: "depositFor",
         args: [onBehalf, amount],
       }),
+    );
+  }
+
+  erc20WrapperDepositAllFor(asset: Address, underlying: Address, onBehalf: Address) {
+    return this.pushCall(
+      asset,
+      0n,
+      encodeFunctionData({
+        abi: erc20WrapperAbi,
+        functionName: "depositFor",
+        args: [onBehalf, 0n],
+      }),
+      undefined,
+      [this.erc20BalanceOf(underlying, this.address, 4n + 32n)],
     );
   }
 
@@ -562,21 +576,24 @@ export class ExecutorEncoder {
       asset,
       0n,
       encodeFunctionData({
-        abi: [
-          {
-            inputs: [
-              { name: "receiver", type: "address" },
-              { name: "amount", type: "uint256" },
-            ],
-            name: "withdrawTo",
-            outputs: [],
-            stateMutability: "nonpayable",
-            type: "function",
-          },
-        ],
+        abi: erc20WrapperAbi,
         functionName: "withdrawTo",
         args: [receiver, amount],
       }),
+    );
+  }
+
+  erc20WrapperWithdrawAllTo(asset: Address, receiver: Address) {
+    return this.pushCall(
+      asset,
+      0n,
+      encodeFunctionData({
+        abi: erc20WrapperAbi,
+        functionName: "withdrawTo",
+        args: [receiver, 0n],
+      }),
+      undefined,
+      [this.erc20BalanceOf(asset, this.address, 4n + 32n)],
     );
   }
 
@@ -587,6 +604,16 @@ export class ExecutorEncoder {
       vault,
       0n,
       encodeFunctionData({ abi: erc4626Abi, functionName: "deposit", args: [assets, owner] }),
+    );
+  }
+
+  erc4626DepositAll(vault: Address, asset: Address, owner: Address) {
+    return this.pushCall(
+      vault,
+      0n,
+      encodeFunctionData({ abi: erc4626Abi, functionName: "deposit", args: [0n, owner] }),
+      undefined,
+      [this.erc20BalanceOf(asset, this.address, 4n)],
     );
   }
 
@@ -611,6 +638,16 @@ export class ExecutorEncoder {
       vault,
       0n,
       encodeFunctionData({ abi: erc4626Abi, functionName: "redeem", args: [shares, receiver, owner] }),
+    );
+  }
+
+  erc4626RedeemAll(vault: Address, receiver: Address, owner: Address) {
+    return this.pushCall(
+      vault,
+      0n,
+      encodeFunctionData({ abi: erc4626Abi, functionName: "redeem", args: [0n, receiver, owner] }),
+      undefined,
+      [this.erc20BalanceOf(vault, this.address, 4n)],
     );
   }
 
@@ -901,6 +938,50 @@ export class ExecutorEncoder {
           },
         ],
       }),
+    );
+  }
+
+  uniV3ExactInputAll(uniV3RouterAddress: Address, path: Address, amountOutMinimum: bigint, recipient?: Address) {
+    recipient ||= this.address;
+
+    return this.pushCall(
+      uniV3RouterAddress,
+      0n,
+      encodeFunctionData({
+        abi: [
+          {
+            inputs: [
+              {
+                components: [
+                  { name: "path", type: "bytes" },
+                  { name: "recipient", type: "address" },
+                  { name: "deadline", type: "uint256" },
+                  { name: "amountIn", type: "uint256" },
+                  { name: "amountOutMinimum", type: "uint256" },
+                ],
+                name: "params",
+                type: "tuple",
+              },
+            ],
+            name: "exactInput",
+            outputs: [{ name: "amountOut", type: "uint256" }],
+            stateMutability: "payable",
+            type: "function",
+          },
+        ],
+        functionName: "exactInput",
+        args: [
+          {
+            path,
+            recipient,
+            deadline: BigInt(Math.ceil(Date.now() / 1000)) + 90n,
+            amountIn: 0n,
+            amountOutMinimum,
+          },
+        ],
+      }),
+      undefined,
+      [this.erc20BalanceOf(sliceHex(path, 0, 20), this.address, 4n + 32n * 4n)],
     );
   }
 
