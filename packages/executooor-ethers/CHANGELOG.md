@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 1.1.8 (2024-08-22)
+
+### Bug Fixes
+
+* **publish:** make outDir relative ([ca17358](https://github.com/Rubilmax/executooor/commit/ca1735844dfd65a5f679756c72d73ad0f25484b7))
+
 ## 1.1.7 (2024-08-22)
 
 **Note:** Version bump only for package executooor-ethers
