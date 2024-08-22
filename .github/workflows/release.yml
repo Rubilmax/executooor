@@ -35,7 +35,8 @@ jobs:
 
       - run: yarn lerna version --no-private --conventional-commits --create-release github --generate-release-notes --y
 
-      - run: yarn run publish --y
+      - run: |
+          echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" > ~/.npmrc
+          yarn run publish --y
         env:
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
           MAINNET_RPC_URL: ${{ secrets.MAINNET_RPC_URL }}
