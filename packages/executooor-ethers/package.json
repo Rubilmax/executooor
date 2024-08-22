@@ -12,6 +12,7 @@
     "lib/*"
   ],
   "scripts": {
+    "prepublish": "yarn build",
     "prepare": "cp -r ../../contracts/ .",
     "typecheck": "tsc --noEmit",
     "build": "yarn prepare && hardhat compile --force && tsc --build ./tsconfig.build.json",
