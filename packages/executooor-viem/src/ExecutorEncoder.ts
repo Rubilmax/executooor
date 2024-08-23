@@ -1,8 +1,11 @@
 import "evm-maths";
 import {
+  Account,
   Address,
+  Chain,
   Client,
   Hex,
+  Transport,
   encodeAbiParameters,
   encodeFunctionData,
   erc20Abi,
@@ -89,7 +92,7 @@ export class ExecutorEncoder {
 
   constructor(
     public readonly address: Address,
-    public readonly client: Client,
+    public readonly client: Client<Transport, Chain | undefined, Account>,
   ) {}
 
   pushCall(target: Address, value: bigint, callData: Hex, context?: CallbackContext, placeholders?: Placeholder[]) {
@@ -110,7 +113,6 @@ export class ExecutorEncoder {
 
   async exec(value = 0n) {
     const { address, totalValue, client } = this;
-    if (client.account == null) throw Error("no account provided");
 
     value += totalValue;
 
