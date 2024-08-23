@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 1.1.9 (2024-08-23)
+
+**Note:** Version bump only for package executooor-viem
+
 ## 1.1.8 (2024-08-22)
 
 ### Bug Fixes
