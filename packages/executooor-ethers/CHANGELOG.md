@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# 1.2.0 (2024-08-23)
+
+### Features
+
+* **viem:** re-add wallet client as input ([16e7ee3](https://github.com/Rubilmax/executooor/commit/16e7ee33edb176beb1b2d494f04a9529cf9dcac7))
+
 ## 1.1.9 (2024-08-23)
 
 **Note:** Version bump only for package executooor-ethers
