@@ -16,7 +16,8 @@ import {
   zeroAddress,
 } from "viem";
 import { writeContract } from "viem/actions";
-import { erc20WrapperAbi, executorAbi } from "./abis";
+import { erc20WrapperAbi } from "./abis";
+import { executorAbi } from "./contracts/Executor";
 
 export type PromiseOrValue<T> = T | Promise<T>;
 

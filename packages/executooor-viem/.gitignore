@@ -2,3 +2,4 @@
 contracts/
 artifacts/
 cache/
+!src/contracts/
