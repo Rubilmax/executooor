@@ -46,7 +46,7 @@ export interface MarketParams {
   lltv: bigint;
 }
 
-export class ExecutorEncoder {
+export class ExecutorEncoder<client extends Client<Transport, Chain, Account> = Client<Transport, Chain, Account>> {
   static buildCall(
     target: Address,
     value: bigint,
@@ -92,7 +92,7 @@ export class ExecutorEncoder {
 
   constructor(
     public readonly address: Address,
-    public readonly client: Client<Transport, Chain | undefined, Account>,
+    public readonly client: client,
   ) {}
 
   pushCall(target: Address, value: bigint, callData: Hex, context?: CallbackContext, placeholders?: Placeholder[]) {
@@ -117,8 +117,6 @@ export class ExecutorEncoder {
     value += totalValue;
 
     return await writeContract(client, {
-      chain: client.chain,
-      account: client.account,
       address,
       abi: executorAbi,
       functionName: "exec_606BaXt",
