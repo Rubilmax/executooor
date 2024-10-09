@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# 1.3.0 (2024-10-09)
+
+### Features
+
+* **viem:** make types more permissive ([544bc72](https://github.com/Rubilmax/executooor/commit/544bc7235c7618224fd8458bfcb40120c22b18a8))
+
 # 1.2.0 (2024-08-23)
 
 ### Features
