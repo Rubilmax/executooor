@@ -46,7 +46,7 @@
     "dotenv": "^16.4.5",
     "ethers": "^6.12.1",
     "ethers-types": "^3.15.0",
-    "evm-maths": "^6.0.3",
+    "evm-maths": "^7.0.0",
     "hardhat": "^2.22.5",
     "hardhat-deal": "^3.0.2",
     "hardhat-gas-reporter": "^2.2.1",
@@ -58,7 +58,7 @@
   "peerDependencies": {
     "ethers": "^6.12.0",
     "ethers-types": "^3.15.0",
-    "evm-maths": "^6.0.0"
+    "evm-maths": "^7.0.0"
   },
   "publishConfig": {
     "main": "lib/index.js",

@@ -43,6 +43,7 @@
     "chai-as-promised": "^7.1.2",
     "dotenv": "^16.4.5",
     "ethers": "^6.13.2",
+    "evm-maths": "^7.0.0",
     "hardhat": "^2.22.5",
     "hardhat-deal": "^3.0.2",
     "hardhat-gas-reporter": "^2.2.1",
@@ -52,7 +53,7 @@
     "viem": "^2.19.7"
   },
   "peerDependencies": {
-    "evm-maths": "^6.0.0",
+    "evm-maths": "^7.0.0",
     "viem": "^2.0.0"
   },
   "publishConfig": {
