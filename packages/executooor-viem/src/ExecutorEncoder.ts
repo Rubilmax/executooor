@@ -19,8 +19,6 @@ import { writeContract } from "viem/actions";
 import { erc20WrapperAbi } from "./abis";
 import { executorAbi } from "./contracts/Executor";
 
-export type PromiseOrValue<T> = T | Promise<T>;
-
 export interface AssetRequest {
   asset: Address;
   amount: bigint;
