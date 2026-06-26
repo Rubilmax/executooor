@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 1.3.4 (2026-06-26)
+
+### Bug Fixes
+
+* document executor flows and helper encodings ([5cf6686](https://github.com/Rubilmax/executooor/commit/5cf66868b68a0e1bf35dc673da4340264e941ba9))
+
 ## 1.3.3 (2024-10-10)
 
 **Note:** Version bump only for package executooor-ethers
