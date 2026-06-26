@@ -1,3 +1,5 @@
+export { executorAbi } from "./contracts/Executor";
+
 export const erc20WrapperAbi = [
   {
     inputs: [

@@ -13,7 +13,7 @@
   ],
   "scripts": {
     "prepublish": "yarn build",
-    "prepare": "cp -r ../../contracts/ .",
+    "prepare": "rm -rf contracts && cp -R ../../contracts .",
     "typecheck": "tsc --noEmit",
     "build": "yarn prepare && hardhat compile --force && tsc --build ./tsconfig.build.json",
     "test": "yarn prepare && hardhat test"
